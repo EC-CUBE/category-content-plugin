@@ -1,7 +1,7 @@
 name: CategoryContent
 event: CategoryContent
 code: CategoryContent
-version: 1.0
+version: 0.0.1
 service:
     - CategoryContentServiceProvider
 orm.path:
