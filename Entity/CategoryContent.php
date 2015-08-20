@@ -11,47 +11,21 @@
 
 namespace Plugin\CategoryContent\Entity;
 
-use Eccube\Entity\Category;
 
 class CategoryContent extends \Eccube\Entity\AbstractEntity
 {
-    private $category_id;
-
-    private $Category;
+    private $id;
 
     private $content;
 
-    private $create_date;
-
-    private $update_date;
-
-    public function setCategoryId($id)
+    public function getId()
     {
-        $this->category_id = $id;
-
-        return $this;
+        return $this->id;
     }
 
-    public function getCategoryId()
+    public function setId($id)
     {
-        return $this->category_id;
-    }
-
-    public function setCategory(Category $Category)
-    {
-        $this->Category = $Category;
-
-        return $this;
-    }
-
-    public function getCategory()
-    {
-        return $this->Category;
-    }
-
-    public function setContent($content)
-    {
-        $this->content = $content;
+        $this->id = $id;
 
         return $this;
     }
@@ -61,27 +35,10 @@ class CategoryContent extends \Eccube\Entity\AbstractEntity
         return $this->content;
     }
 
-    public function setCreateDate($date)
+    public function setContent($content)
     {
-        $this->create_date = $date;
+        $this->content = $content;
 
         return $this;
-    }
-
-    public function getCreateDate()
-    {
-        return $this->create_date;
-    }
-
-    public function setUpdateDate($date)
-    {
-        $this->update_date = $date;
-
-        return $this;
-    }
-
-    public function getUpdateDate()
-    {
-        return $this->update_date;
     }
 }
