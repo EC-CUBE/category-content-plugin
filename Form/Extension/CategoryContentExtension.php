@@ -21,11 +21,14 @@ class CategoryContentExtension extends AbstractTypeExtension
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('content', 'textarea', array(
-                'label' => 'カテゴリ別表示用コンテンツ',
-                'mapped' => false,
-            ))
-        ;
+            ->add(
+                'content',
+                'textarea',
+                array(
+                    'label' => 'カテゴリ別表示用コンテンツ',
+                    'mapped' => false,
+                )
+            );
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)

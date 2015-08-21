@@ -11,14 +11,14 @@
 
 namespace Plugin\CategoryContent;
 
-use Eccube\Event\RenderEvent;
-use Eccube\Event\ShoppingEvent;
-use Symfony\Component\CssSelector\CssSelector;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 class CategoryContent
 {
+    /**
+     * @var \Eccube\Application
+     */
     private $app;
 
     public function __construct($app)
@@ -29,6 +29,7 @@ class CategoryContent
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
         $app = $this->app;
+
         $request = $event->getRequest();
         $response = $event->getResponse();
 
@@ -40,7 +41,7 @@ class CategoryContent
         }
 
         $CategoryContent = $app['category_content.repository.category_content']
-            ->findOneBy(array('category_id' => $id));
+            ->find($id);
 
         // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
         if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
@@ -51,7 +52,7 @@ class CategoryContent
         $html = $response->getContent();
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
-        $dom->loadHTML('<?xml encoding="UTF-8">' . $html);
+        $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
         $dom->encoding = "UTF-8";
         $dom->formatOutput = true;
 
@@ -76,21 +77,29 @@ class CategoryContent
         $app = $this->app;
         $request = $event->getRequest();
         $response = $event->getResponse();
+
         $id = $request->attributes->get('id');
+
+        $CategoryContent = null;
+
+        if ($id) {
+            $CategoryContent = $app['category_content.repository.category_content']
+                ->find($id);
+        }
+
+        if (is_null($CategoryContent)) {
+            $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
+        }
 
         // DomCrawlerにHTMLを食わせる
         $html = $response->getContent();
         $crawler = new Crawler($html);
 
-        $CategoryContent = $app['category_content.repository.category_content']->find($id);
-        if (is_null($CategoryContent)) {
-            $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
-        }
-
         $form = $app['form.factory']
             ->createBuilder('admin_category')
             ->getForm();
-        $form->get('content')->setData($CategoryContent->getContent());
+
+        $form['content']->setData($CategoryContent->getContent());
         $form->handleRequest($request);
 
         $twig = $app->renderView(
@@ -108,7 +117,7 @@ class CategoryContent
         $newHtml = '';
         if (count($oldCrawler) > 0) {
             $oldHtml = $oldCrawler->html();
-            $newHtml = $oldHtml . $twig;
+            $newHtml = $oldHtml.$twig;
         }
 
         $html = str_replace($oldHtml, $newHtml, $html);
@@ -120,35 +129,36 @@ class CategoryContent
     public function onAdminProductCategoryEditAfter()
     {
         $app = $this->app;
+
+        if ('POST' !== $app['request']->getMethod()) {
+            return;
+        }
+
         $id = $app['request']->attributes->get('id');
 
         $form = $app['form.factory']
             ->createBuilder('admin_category')
             ->getForm();
 
-        $CategoryContent = $app['category_content.repository.category_content']->find($id);
+        $CategoryContent = $app['category_content.repository.category_content']
+            ->find($id);
+
         if (is_null($CategoryContent)) {
             $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
         }
-        $form->get('content')->setData($CategoryContent->getContent());
-
-        $form->handleRequest($app['request']);
 
         if ('POST' === $app['request']->getMethod()) {
-            if ($form->isValid()) {
-                $content = $form->get('content')->getData();
+            $form->handleRequest($app['request']);
 
-                $Category = $app['eccube.repository.category']->find($id);
+            if ($form->isValid()) {
 
                 $CategoryContent
-                    ->setCategoryId($Category->getId())
-                    ->setCategory($Category)
-                    ->setContent($content);
+                    ->setId($id)
+                    ->setContent($form['content']->getData());
 
                 $app['orm.em']->persist($CategoryContent);
                 $app['orm.em']->flush();
             }
         }
     }
-
 }

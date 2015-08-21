@@ -7,7 +7,6 @@ use Doctrine\DBAL\Schema\Schema;
 
 class Version20150706204400 extends AbstractMigration
 {
-
     public function up(Schema $schema)
     {
         $this->createPluginTable($schema);
@@ -15,17 +14,14 @@ class Version20150706204400 extends AbstractMigration
 
     public function down(Schema $schema)
     {
-        $schema->dropTable('category_content');
+        $schema->dropTable('plg_category_content');
     }
 
     protected function createPluginTable(Schema $schema)
     {
-        $table = $schema->createTable("category_contnet");
-        $table
-            ->addColumn('category_id', 'integer', array(
-                'notnull' => true,
-            ))
-            ->addColumn('content', 'text')
-        ;
+        $table = $schema->createTable("plg_category_content");
+        $table->addColumn('category_id', 'integer');
+        $table->addColumn('content', 'text', array('notnull' => false));
+        $table->setPrimaryKey(array('category_id'));
     }
 }

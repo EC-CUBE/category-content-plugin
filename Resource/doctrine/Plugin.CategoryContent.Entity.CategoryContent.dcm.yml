@@ -1,29 +1,18 @@
 Plugin\CategoryContent\Entity\CategoryContent:
     type: entity
-    table: category_content
+    table: plg_category_content
     repositoryClass: Plugin\CategoryContent\Repository\CategoryContentRepository
     id:
-        category_id:
-            type: smallint
+        id:
+            type: integer
             nullable: false
             unsigned: false
             id: true
+            column: category_id
             generator:
                 strategy: NONE
     fields:
         content:
             type: text
-            nullable: false
-        create_date:
-            type: datetime
-            nullable: false
-        update_date:
-            type: datetime
             nullable: true
-    oneToOne:
-        Category:
-            targetEntity: \Eccube\Entity\Category
-            joinColumn:
-                name: category_id
-                referencedColumnName: category_id
     lifecycleCallbacks: {  }
