@@ -9,14 +9,14 @@
 * file that was distributed with this source code.
 */
 
-namespace Plugin\CategoryContent\Form\Extension;
+namespace Plugin\CategoryContent\Form\Type\Admin;
 
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
-class CategoryContentExtension extends AbstractTypeExtension
+class CategoryContentType extends AbstractTypeExtension
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
