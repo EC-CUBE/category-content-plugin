@@ -21,7 +21,7 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
     {
         // Form/Extension
         $app['form.type.extensions'] = $app->share($app->extend('form.type.extensions', function ($extensions) {
-            $extensions[] = new \Plugin\CategoryContent\Form\Extension\CategoryContentExtension();
+            $extensions[] = new \Plugin\CategoryContent\Form\Type\Admin\CategoryContentType();
             return $extensions;
         }));
 

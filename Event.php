@@ -14,7 +14,7 @@ namespace Plugin\CategoryContent;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
-class CategoryContent
+class Event
 {
     /**
      * @var \Eccube\Application
