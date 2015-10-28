@@ -1,5 +1,5 @@
 name: CategoryContent
-event: CategoryContent
+event: CategoryContentEvent
 code: CategoryContent
 version: 0.0.1
 service:

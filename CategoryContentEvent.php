@@ -14,7 +14,7 @@ namespace Plugin\CategoryContent;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
-class CategoryContent
+class CategoryContentEvent
 {
     /**
      * @var \Eccube\Application
@@ -68,7 +68,8 @@ class CategoryContent
         $node = $dom->importNode($template, true);
         $navElement->insertBefore($node);
 
-        $response->setContent($dom->saveHTML());
+        $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
+        $response->setContent($newHtml);
         $event->setResponse($response);
     }
 
