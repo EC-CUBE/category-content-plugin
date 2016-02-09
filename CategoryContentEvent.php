@@ -11,6 +11,8 @@
 
 namespace Plugin\CategoryContent;
 
+use Eccube\Common\Constant;
+use Eccube\Event\TemplateEvent;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
@@ -26,8 +28,79 @@ class CategoryContentEvent
         $this->app = $app;
     }
 
+    public function onRenderProductList(TemplateEvent $event)
+    {
+        if (!$this->supportNewHookPoint()) return;
+
+        $id = $event->getParameters()['Category']['id'];
+
+        // category_idがない場合、レンダリングを変更しない
+        if (is_null($id)) {
+            return;
+        }
+
+        $CategoryContent = $this->app['category_content.repository.category_content']
+            ->find($id);
+
+        // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
+        if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
+            return;
+        }
+
+        // 挿入対象を取得
+        $dom = $this->Twig2DOMDocument($event->getSource());
+        $navElement = $dom->getElementById('page_navi_top');
+        if (!$navElement instanceof \DOMElement) {
+            return;
+        }
+        // カテゴリコンテンツを挿入
+        $template = $dom->createDocumentFragment();
+        $template->appendXML($CategoryContent->getContent());
+        $node = $dom->importNode($template, true);
+        $navElement->insertBefore($node);
+
+        $event->setSource($this->DOMDocument2Twig($dom));
+    }
+
+    /**
+     * Twig -> DOMDocument
+     * @param string $twig_code
+     * @return \DOMDocument
+     */
+    private function Twig2DOMDocument($twig_code)
+    {
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+
+        // Twigコード部分のみを取得できるように<div id="_twigcode">で囲っておく
+        $source = mb_convert_encoding('<div id="_twigcode">' . $twig_code . '</div>', 'HTML-ENTITIES', "UTF-8");
+        $dom->loadHTML($source);
+
+        return $dom;
+    }
+
+    /**
+     * DOMDocument -> Twig
+     * @param \DOMDocument $dom
+     * @return string
+     */
+    private function DOMDocument2Twig(\DOMDocument $dom)
+    {
+        // saveHTMLだとタグ中のTwigコードが文字化けするため、saveXMLで取得する
+        $str = $dom->saveXML($dom->getElementById("_twigcode"));
+        // saveXMLで取得した文字列が一部UTF-8になっているため、HTML-ENTITIESに再変換して統一する
+        $str = mb_convert_encoding($str, 'HTML-ENTITIES', "UTF-8");
+        // HTML-ENTITIESからUTF-8への変換
+        $str = mb_convert_encoding($str, 'UTF-8', "HTML-ENTITIES");
+        // <div id="_twigcode">タグを削除
+        $twig_code =  preg_replace('@^<div id="_twigcode"[^>]*>|</div>$@', '', $str);
+
+        return $twig_code;
+    }
+
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
+        if ($this->supportNewHookPoint()) return;
+
         $app = $this->app;
 
         $request = $event->getRequest();
@@ -161,5 +234,13 @@ class CategoryContentEvent
                 $app['orm.em']->flush();
             }
         }
+    }
+
+    /**
+     * @return bool v3.0.9以降のフックポイントに対応しているか？
+     */
+    private function supportNewHookPoint()
+    {
+        return version_compare('3.0.9', Constant::VERSION, '<=');
     }
 }
