@@ -92,7 +92,7 @@ class CategoryContentEvent
         // HTML-ENTITIESからUTF-8への変換
         $str = mb_convert_encoding($str, 'UTF-8', "HTML-ENTITIES");
         // <div id="_twigcode">タグを削除
-        $twig_code =  preg_replace('@^<div id="_twigcode"[^>]*>|</div>$@', '', $str);
+        $twig_code = preg_replace('@^<div id="_twigcode"[^>]*>|</div>$@', '', $str);
 
         return $twig_code;
     }
@@ -125,7 +125,7 @@ class CategoryContentEvent
         $html = $response->getContent();
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
-        $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $html);
         $dom->encoding = "UTF-8";
         $dom->formatOutput = true;
 
@@ -191,7 +191,7 @@ class CategoryContentEvent
         $newHtml = '';
         if (count($oldCrawler) > 0) {
             $oldHtml = $oldCrawler->html();
-            $newHtml = $oldHtml.$twig;
+            $newHtml = $oldHtml . $twig;
         }
 
         $html = str_replace($oldHtml, $newHtml, $html);
