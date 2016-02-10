@@ -46,8 +46,6 @@ class CategoryContentEvent
 
     public function onRenderProductList(TemplateEvent $event)
     {
-        if (!$this->supportNewHookPoint()) return;
-
         // category_idがない場合、レンダリングしない
         $id = $event->getParameters()['Category']['id'];
         if (is_null($id)) {
@@ -109,8 +107,6 @@ class CategoryContentEvent
 
     public function onAdminProductCategoryEditComplete(EventArgs $event)
     {
-        if (!$this->supportNewHookPoint()) return;
-
         /** @var Application $app */
         $app = $this->app;
         /** @var Category $target_category */
