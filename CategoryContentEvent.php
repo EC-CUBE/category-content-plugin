@@ -11,9 +11,13 @@
 
 namespace Plugin\CategoryContent;
 
+use Eccube\Application;
 use Eccube\Common\Constant;
+use Eccube\Entity\Category;
+use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 class CategoryContentEvent
@@ -234,6 +238,32 @@ class CategoryContentEvent
                 $app['orm.em']->flush();
             }
         }
+    }
+
+    public function onAdminProductCategoryEditComplete(EventArgs $event)
+    {
+        /** @var Application $app */
+        $app = $this->app;
+        /** @var Category $target_category */
+        $target_category = $event['targetCategory'];
+        /** @var FormInterface $form */
+        $form = $event['form'];
+
+        // 現在のエンティティを取得
+        $id = $target_category->getId();
+        $CategoryContent = $app['category_content.repository.category_content']->find($id);
+        if (is_null($CategoryContent)) {
+            $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
+        }
+
+        // エンティティを更新
+        $CategoryContent
+            ->setId($id)
+            ->setContent($form['content']->getData());
+
+        // DB更新
+        $app['orm.em']->persist($CategoryContent);
+        $app['orm.em']->flush();
     }
 
     /**

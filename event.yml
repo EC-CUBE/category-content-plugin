@@ -1,5 +1,9 @@
 eccube.event.render.admin_product_category_edit.before:
     - [onRenderAdminProductCategoryEditBefore, NORMAL]
+
+admin.product.category.index.complete:
+    - [onAdminProductCategoryEditComplete, NORMAL]
+# for v3.0.0 - v3.0.8
 eccube.event.controller.admin_product_category_edit.after:
     - [onAdminProductCategoryEditAfter, NORMAL]
 
