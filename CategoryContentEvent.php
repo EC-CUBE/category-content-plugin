@@ -34,53 +34,75 @@ class CategoryContentEvent
 
     /**
      * v3.0.0 - 3.0.8 向けのイベントを処理するインスタンス
+     *
      * @var CategoryContentLegacyEvent
      */
     private $legacy_event;
 
+    /**
+     * CategoryContentEvent constructor.
+     *
+     * @param $app
+     */
     public function __construct($app)
     {
         $this->app = $app;
-        $this->legacy_event = new CategoryContentLegacyEvent($app);
+        $this->legacyEvent = new CategoryContentLegacyEvent($app);
     }
 
+    /**
+     * 商品一覧画面にカテゴリコンテンツを表示する.
+     *
+     * @param TemplateEvent $event
+     */
     public function onRenderProductList(TemplateEvent $event)
     {
-        // category_idがない場合、レンダリングしない
-        $id = $event->getParameters()['Category']['id'];
-        if (is_null($id)) {
+        $parameters = $event->getParameters();
+
+        // カテゴリIDがない場合、レンダリングしない
+        if (is_null($parameters['Category'])) {
             return;
         }
 
         // 登録がない、もしくは空で登録されている場合、レンダリングをしない
+        $Category = $parameters['Category'];
         $CategoryContent = $this->app['category_content.repository.category_content']
-            ->find($id);
+            ->find($Category->getId());
         if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
             return;
         }
 
         // twigコードにカテゴリコンテンツを挿入
-        $twig_code = $event->getSource();
-        $insert_content = '<div>' . $CategoryContent->getContent() . '</div>';
-        $start_tag_pattern = preg_quote('id="page_navi_top"', '/');
-        $end_tag_pattern = preg_quote('</form>', '/');
-        $twig_code = preg_replace('/(' . $start_tag_pattern . ')(.*?)(' . $end_tag_pattern . ')/s', '$1$2' . $insert_content . '$3', $twig_code);
-        $event->setSource($twig_code);
+        $snipet = '<div class="row">{{ CategoryContent.content | raw }}</div>';
+        $search = '<div id="result_info_box"';
+        $replace = $snipet.$search;
+        $source = str_replace($search, $replace, $event->getSource());
+        $event->setSource($source);
+
+        // twigパラメータにカテゴリコンテンツを追加
+        $parameters['CategoryContent'] = $CategoryContent;
+        $event->setParameters($parameters);
     }
 
+    /**
+     * 管理画面：カテゴリ登録画面に, カテゴリコンテンツのフォームを追加する.
+     *
+     * @param EventArgs $event
+     */
     public function onFormInitializeAdminProductCategory(EventArgs $event)
     {
         /** @var Category $target_category */
-        $target_category = $event->getArgument('TargetCategory');
+        $TargetCategory = $event->getArgument('TargetCategory');
+        $id = $TargetCategory->getId();
 
-        // 編集中のターゲットIDが無い場合は、フォームを表示させない
-        $id = $target_category->getId();
-        if (is_null($id)) {
-            return;
+        $CategoryContent = null;
+
+        if ($id) {
+            // カテゴリ編集時は初期値を取得
+            $CategoryContent = $this->app['category_content.repository.category_content']->find($id);
         }
 
-        // 初期値の取得
-        $CategoryContent = $this->app['category_content.repository.category_content']->find($id);
+        // カテゴリ新規登録またはコンテンツが未登録の場合
         if (is_null($CategoryContent)) {
             $CategoryContent = new CategoryContent();
         }
@@ -97,7 +119,7 @@ class CategoryContentEvent
                 'mapped' => false,
                 'attr' => array(
                     'placeholder' => 'コンテンツを入力してください(HTMLタグ使用可)',
-                )
+                ),
             )
         );
 
@@ -105,17 +127,22 @@ class CategoryContentEvent
         $builder->get(self::CATEGORY_CONTENT_TEXTAREA_NAME)->setData($CategoryContent->getContent());
     }
 
+    /**
+     * 管理画面：カテゴリ登録画面で、登録処理を行う.
+     *
+     * @param EventArgs $event
+     */
     public function onAdminProductCategoryEditComplete(EventArgs $event)
     {
         /** @var Application $app */
         $app = $this->app;
         /** @var Category $target_category */
-        $target_category = $event['TargetCategory'];
+        $TargetCategory = $event->getArgument('TargetCategory');
         /** @var FormInterface $form */
-        $form = $event['form'];
+        $form = $event->getArgument('form');
 
         // 現在のエンティティを取得
-        $id = $target_category->getId();
+        $id = $TargetCategory->getId();
         $CategoryContent = $app['category_content.repository.category_content']->find($id);
         if (is_null($CategoryContent)) {
             $CategoryContent = new CategoryContent();
@@ -128,7 +155,7 @@ class CategoryContentEvent
 
         // DB更新
         $app['orm.em']->persist($CategoryContent);
-        $app['orm.em']->flush();
+        $app['orm.em']->flush($CategoryContent);
     }
 
 #region v3.0.0 - 3.0.8 用のイベント
@@ -138,7 +165,9 @@ class CategoryContentEvent
      */
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
-        if ($this->supportNewHookPoint()) return;
+        if ($this->supportNewHookPoint()) {
+            return;
+        }
 
         $this->legacy_event->onRenderProductListBefore($event);
     }
@@ -149,9 +178,11 @@ class CategoryContentEvent
      */
     public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
     {
-        if ($this->supportNewHookPoint()) return;
+        if ($this->supportNewHookPoint()) {
+            return;
+        }
 
-        $this->legacy_event->onRenderAdminProductCategoryEditBefore($event);
+        $this->legacyEvent->onRenderAdminProductCategoryEditBefore($event);
     }
 
     /**
@@ -160,9 +191,11 @@ class CategoryContentEvent
      */
     public function onAdminProductCategoryEditAfter()
     {
-        if ($this->supportNewHookPoint()) return;
+        if ($this->supportNewHookPoint()) {
+            return;
+        }
 
-        $this->legacy_event->onAdminProductCategoryEditAfter();
+        $this->legacyEvent->onAdminProductCategoryEditAfter();
     }
 # endregion
 
