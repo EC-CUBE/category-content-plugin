@@ -37,7 +37,7 @@ class CategoryContentEvent
      *
      * @var CategoryContentLegacyEvent
      */
-    private $legacy_event;
+    private $legacyEvent;
 
     /**
      * CategoryContentEvent constructor.
@@ -169,7 +169,7 @@ class CategoryContentEvent
             return;
         }
 
-        $this->legacy_event->onRenderProductListBefore($event);
+        $this->legacyEvent->onRenderProductListBefore($event);
     }
 
     /**
