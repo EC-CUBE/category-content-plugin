@@ -11,155 +11,199 @@
 
 namespace Plugin\CategoryContent;
 
-use Symfony\Component\DomCrawler\Crawler;
+use Eccube\Application;
+use Eccube\Common\Constant;
+use Eccube\Entity\Category;
+use Eccube\Event\EventArgs;
+use Eccube\Event\TemplateEvent;
+use Plugin\CategoryContent\Entity\CategoryContent;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 class CategoryContentEvent
 {
     /**
+     * プラグインが追加するフォーム名
+     */
+    const CATEGORY_CONTENT_TEXTAREA_NAME = 'plg_category_content';
+
+    /**
      * @var \Eccube\Application
      */
     private $app;
 
+    /**
+     * v3.0.0 - 3.0.8 向けのイベントを処理するインスタンス
+     *
+     * @var CategoryContentLegacyEvent
+     */
+    private $legacy_event;
+
+    /**
+     * CategoryContentEvent constructor.
+     *
+     * @param $app
+     */
     public function __construct($app)
     {
         $this->app = $app;
+        $this->legacyEvent = new CategoryContentLegacyEvent($app);
     }
 
-    public function onRenderProductListBefore(FilterResponseEvent $event)
+    /**
+     * 商品一覧画面にカテゴリコンテンツを表示する.
+     *
+     * @param TemplateEvent $event
+     */
+    public function onRenderProductList(TemplateEvent $event)
     {
-        $app = $this->app;
+        $parameters = $event->getParameters();
 
-        $request = $event->getRequest();
-        $response = $event->getResponse();
-
-        $id = $request->query->get('category_id');
-
-        // category_idがない場合、レンダリングを変更しない
-        if (is_null($id)) {
+        // カテゴリIDがない場合、レンダリングしない
+        if (is_null($parameters['Category'])) {
             return;
         }
 
-        $CategoryContent = $app['category_content.repository.category_content']
-            ->find($id);
-
-        // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
+        // 登録がない、もしくは空で登録されている場合、レンダリングをしない
+        $Category = $parameters['Category'];
+        $CategoryContent = $this->app['category_content.repository.category_content']
+            ->find($Category->getId());
         if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
             return;
         }
 
-        // 書き換えhtmlの初期化
-        $html = $response->getContent();
-        libxml_use_internal_errors(true);
-        $dom = new \DOMDocument();
-        $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
-        $dom->encoding = "UTF-8";
-        $dom->formatOutput = true;
+        // twigコードにカテゴリコンテンツを挿入
+        $snipet = '<div class="row">{{ CategoryContent.content | raw }}</div>';
+        $search = '<div id="result_info_box"';
+        $replace = $snipet.$search;
+        $source = str_replace($search, $replace, $event->getSource());
+        $event->setSource($source);
 
-        // 挿入対象を取得
-        $navElement = $dom->getElementById('page_navi_top');
-        if (!$navElement instanceof \DOMElement) {
-            return;
-        }
-
-        $template = $dom->createDocumentFragment();
-        $template->appendXML($CategoryContent->getContent());
-
-        $node = $dom->importNode($template, true);
-        $navElement->insertBefore($node);
-
-        $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
-        $response->setContent($newHtml);
-        $event->setResponse($response);
+        // twigパラメータにカテゴリコンテンツを追加
+        $parameters['CategoryContent'] = $CategoryContent;
+        $event->setParameters($parameters);
     }
 
-    public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
+    /**
+     * 管理画面：カテゴリ登録画面に, カテゴリコンテンツのフォームを追加する.
+     *
+     * @param EventArgs $event
+     */
+    public function onFormInitializeAdminProductCategory(EventArgs $event)
     {
-        $app = $this->app;
-        $request = $event->getRequest();
-        $response = $event->getResponse();
-
-        $id = $request->attributes->get('id');
+        /** @var Category $target_category */
+        $TargetCategory = $event->getArgument('TargetCategory');
+        $id = $TargetCategory->getId();
 
         $CategoryContent = null;
 
         if ($id) {
-            $CategoryContent = $app['category_content.repository.category_content']
-                ->find($id);
+            // カテゴリ編集時は初期値を取得
+            $CategoryContent = $this->app['category_content.repository.category_content']->find($id);
         }
 
+        // カテゴリ新規登録またはコンテンツが未登録の場合
         if (is_null($CategoryContent)) {
-            $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
+            $CategoryContent = new CategoryContent();
         }
 
-        // DomCrawlerにHTMLを食わせる
-        $html = $response->getContent();
-        $crawler = new Crawler($html);
-
-        $form = $app['form.factory']
-            ->createBuilder('admin_category')
-            ->getForm();
-
-        $form['content']->setData($CategoryContent->getContent());
-        $form->handleRequest($request);
-
-        $twig = $app->renderView(
-            'CategoryContent/Resource/template/Admin/category.twig',
-            array('form' => $form->createView())
+        // フォームの追加
+        /** @var FormInterface $builder */
+        $builder = $event->getArgument('builder');
+        $builder->add(
+            self::CATEGORY_CONTENT_TEXTAREA_NAME,
+            'textarea',
+            array(
+                'required' => false,
+                'label' => false,
+                'mapped' => false,
+                'attr' => array(
+                    'placeholder' => 'コンテンツを入力してください(HTMLタグ使用可)',
+                ),
+            )
         );
 
-        $oldCrawler = $crawler
-            ->filter('form')
-            ->first();
-
-        // DomCrawlerからHTMLを吐き出す
-        $html = $crawler->html();
-        $oldHtml = '';
-        $newHtml = '';
-        if (count($oldCrawler) > 0) {
-            $oldHtml = $oldCrawler->html();
-            $newHtml = $oldHtml.$twig;
-        }
-
-        $html = str_replace($oldHtml, $newHtml, $html);
-
-        $response->setContent($html);
-        $event->setResponse($response);
+        // 初期値を設定
+        $builder->get(self::CATEGORY_CONTENT_TEXTAREA_NAME)->setData($CategoryContent->getContent());
     }
 
-    public function onAdminProductCategoryEditAfter()
+    /**
+     * 管理画面：カテゴリ登録画面で、登録処理を行う.
+     *
+     * @param EventArgs $event
+     */
+    public function onAdminProductCategoryEditComplete(EventArgs $event)
     {
+        /** @var Application $app */
         $app = $this->app;
+        /** @var Category $target_category */
+        $TargetCategory = $event->getArgument('TargetCategory');
+        /** @var FormInterface $form */
+        $form = $event->getArgument('form');
 
-        if ('POST' !== $app['request']->getMethod()) {
+        // 現在のエンティティを取得
+        $id = $TargetCategory->getId();
+        $CategoryContent = $app['category_content.repository.category_content']->find($id);
+        if (is_null($CategoryContent)) {
+            $CategoryContent = new CategoryContent();
+        }
+
+        // エンティティを更新
+        $CategoryContent
+            ->setId($id)
+            ->setContent($form[self::CATEGORY_CONTENT_TEXTAREA_NAME]->getData());
+
+        // DB更新
+        $app['orm.em']->persist($CategoryContent);
+        $app['orm.em']->flush($CategoryContent);
+    }
+
+#region v3.0.0 - 3.0.8 用のイベント
+    /**
+     * for v3.0.0 - 3.0.8
+     * @deprecated for since v3.0.0, to be removed in 3.1.
+     */
+    public function onRenderProductListBefore(FilterResponseEvent $event)
+    {
+        if ($this->supportNewHookPoint()) {
             return;
         }
 
-        $id = $app['request']->attributes->get('id');
+        $this->legacy_event->onRenderProductListBefore($event);
+    }
 
-        $form = $app['form.factory']
-            ->createBuilder('admin_category')
-            ->getForm();
-
-        $CategoryContent = $app['category_content.repository.category_content']
-            ->find($id);
-
-        if (is_null($CategoryContent)) {
-            $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
+    /**
+     * for v3.0.0 - 3.0.8
+     * @deprecated for since v3.0.0, to be removed in 3.1.
+     */
+    public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
+    {
+        if ($this->supportNewHookPoint()) {
+            return;
         }
 
-        if ('POST' === $app['request']->getMethod()) {
-            $form->handleRequest($app['request']);
+        $this->legacyEvent->onRenderAdminProductCategoryEditBefore($event);
+    }
 
-            if ($form->isValid()) {
-
-                $CategoryContent
-                    ->setId($id)
-                    ->setContent($form['content']->getData());
-
-                $app['orm.em']->persist($CategoryContent);
-                $app['orm.em']->flush();
-            }
+    /**
+     * for v3.0.0 - 3.0.8
+     * @deprecated for since v3.0.0, to be removed in 3.1.
+     */
+    public function onAdminProductCategoryEditAfter()
+    {
+        if ($this->supportNewHookPoint()) {
+            return;
         }
+
+        $this->legacyEvent->onAdminProductCategoryEditAfter();
+    }
+# endregion
+
+    /**
+     * @return bool v3.0.9以降のフックポイントに対応しているか？
+     */
+    private function supportNewHookPoint()
+    {
+        return version_compare('3.0.9', Constant::VERSION, '<=');
     }
 }
