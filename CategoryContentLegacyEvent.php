@@ -67,7 +67,7 @@ class CategoryContentLegacyEvent
         }
 
         $template = $dom->createDocumentFragment();
-        $template->appendXML($CategoryContent->getContent());
+        $template->appendXML(htmlspecialchars($CategoryContent->getContent()));
 
         $node = $dom->importNode($template, true);
         $navElement->insertBefore($node);
