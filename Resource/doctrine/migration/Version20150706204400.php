@@ -31,7 +31,6 @@ class Version20150706204400 extends AbstractMigration
             $meta = $this->getMetadata($app['orm.em']);
             $tool = new SchemaTool($app['orm.em']);
             $tool->createSchema($meta);
-
         } else {
             // 3.0.0 - 3.0.8
             $table = $schema->createTable("plg_category_content");
@@ -44,11 +43,28 @@ class Version20150706204400 extends AbstractMigration
     public function down(Schema $schema)
     {
         if (version_compare(Constant::VERSION, '3.0.9', '>=')) {
+            // 3,0,9 以降の場合, dcm.ymlの定義からテーブル/シーケンスの削除を行う
             $app = \Eccube\Application::getInstance();
             $meta = $this->getMetadata($app['orm.em']);
+
             $tool = new SchemaTool($app['orm.em']);
-            $tool->dropSchema($meta);
+            $schemaFromMetadata = $tool->getSchemaFromMetadata($meta);
+
+            // テーブル削除
+            foreach ($schemaFromMetadata->getTables() as $table) {
+                if ($schema->hasTable($table->getName())) {
+                    $schema->dropTable($table->getName());
+                }
+            }
+
+            // シーケンス削除
+            foreach ($schemaFromMetadata->getSequences() as $sequence) {
+                if ($schema->hasSequence($sequence->getName())) {
+                    $schema->dropSequence($sequence->getName());
+                }
+            }
         } else {
+            // 3.0.0 - 3.0.8
             $schema->dropTable('plg_category_content');
         }
     }
