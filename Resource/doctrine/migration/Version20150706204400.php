@@ -47,7 +47,21 @@ class Version20150706204400 extends AbstractMigration
             $app = \Eccube\Application::getInstance();
             $meta = $this->getMetadata($app['orm.em']);
             $tool = new SchemaTool($app['orm.em']);
-            $tool->dropSchema($meta);
+            $schemaFromMetadata = $tool->getSchemaFromMetadata($meta);
+
+            // テーブル削除
+            foreach ($schemaFromMetadata->getTables() as $table) {
+                if ($schema->hasTable($table->getName())) {
+                    $schema->dropTable($table->getName());
+                }
+            }
+
+            // シーケンス削除
+            foreach ($schemaFromMetadata->getSequences() as $sequence) {
+                if ($schema->hasSequence($sequence->getName())) {
+                    $schema->dropSequence($sequence->getName());
+                }
+            }
         } else {
             $schema->dropTable('plg_category_content');
         }
