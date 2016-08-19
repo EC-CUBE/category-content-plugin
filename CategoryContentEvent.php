@@ -89,7 +89,7 @@ class CategoryContentEvent
      *
      * @param EventArgs $event
      */
-    public function onFormInitializeAdminProductCategory(EventArgs $event)
+    public function onAdminProductCategoryIndexInit(EventArgs $event)
     {
         /** @var Category $target_category */
         $TargetCategory = $event->getArgument('TargetCategory');
@@ -132,7 +132,7 @@ class CategoryContentEvent
      *
      * @param EventArgs $event
      */
-    public function onAdminProductCategoryEditComplete(EventArgs $event)
+    public function onAdminProductCategoryIndexComplete(EventArgs $event)
     {
         /** @var Application $app */
         $app = $this->app;
