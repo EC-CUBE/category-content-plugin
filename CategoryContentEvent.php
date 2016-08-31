@@ -1,13 +1,13 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of EC-CUBE
+ *
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ * http://www.lockon.co.jp/
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Plugin\CategoryContent;
 
@@ -89,7 +89,7 @@ class CategoryContentEvent
      *
      * @param EventArgs $event
      */
-    public function onFormInitializeAdminProductCategory(EventArgs $event)
+    public function onAdminProductCategoryIndexInit(EventArgs $event)
     {
         /** @var Category $target_category */
         $TargetCategory = $event->getArgument('TargetCategory');
@@ -132,7 +132,7 @@ class CategoryContentEvent
      *
      * @param EventArgs $event
      */
-    public function onAdminProductCategoryEditComplete(EventArgs $event)
+    public function onAdminProductCategoryIndexComplete(EventArgs $event)
     {
         /** @var Application $app */
         $app = $this->app;

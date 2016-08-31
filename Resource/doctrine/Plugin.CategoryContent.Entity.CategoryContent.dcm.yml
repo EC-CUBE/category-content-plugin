@@ -6,7 +6,8 @@ Plugin\CategoryContent\Entity\CategoryContent:
         id:
             type: integer
             nullable: false
-            unsigned: false
+            options:
+                unsigned: false
             id: true
             column: category_id
             generator:
