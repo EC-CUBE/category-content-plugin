@@ -12,7 +12,7 @@
 namespace Plugin\CategoryContent;
 
 use Eccube\Plugin\AbstractPluginManager;
-use Plugin\GiftWrapping\Entity\Wrapping;
+use Plugin\CategoryContent\Entity\CategoryContent;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -86,16 +86,16 @@ class PluginManager extends AbstractPluginManager
             // serviceで定義している情報が取得できないため、直接呼び出す
             try {
                 // EC-CUBE3.0.3対応
-                $Wrapping = $em->getRepository('Plugin\CategoryContent\Entity\CategoryContent')->find(1);
+                $CategoryContent = $em->getRepository('Plugin\CategoryContent\Entity\CategoryContent')->find(1);
             } catch (\Exception $e) {
                 return null;
             }
-            if (!$Wrapping) {
-                $Wrapping = new Wrapping();
+            if (!$CategoryContent) {
+                $CategoryContent = new CategoryContent();
                 // IDは1固定
-                $Wrapping->setId(1);
-                $em->persist($Wrapping);
-                $em->flush($Wrapping);
+                $CategoryContent->setId(1);
+                $em->persist($CategoryContent);
+                $em->flush($CategoryContent);
             }
             $em->getConnection()->commit();
         } catch (\Exception $e) {
