@@ -165,6 +165,7 @@ class CategoryContentEvent
 #region v3.0.0 - 3.0.8 用のイベント
     /**
      * onRenderProductListBefore
+     *
      * for v3.0.0 - 3.0.8
      * @param FilterResponseEvent $event
      * @deprecated for since v3.0.0, to be removed in 3.1.
