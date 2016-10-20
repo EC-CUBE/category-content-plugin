@@ -19,6 +19,7 @@ use Eccube\Event\TemplateEvent;
 use Plugin\CategoryContent\Entity\CategoryContent;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class CategoryContentEvent
@@ -121,8 +122,14 @@ class CategoryContentEvent
                 'required' => false,
                 'label' => false,
                 'mapped' => false,
+                'constraints' => array(
+                    new Assert\Length(array(
+                        'max' => $this->app['config']['category_text_area_len'],
+                    )),
+                ),
                 'attr' => array(
-                    'placeholder' => 'コンテンツを入力してください(HTMLタグ使用可)',
+                    'maxlength' => $this->app['config']['category_text_area_len'],
+                    'placeholder' => $this->app->trans('admin.plugin.category.content'),
                 ),
             )
         );

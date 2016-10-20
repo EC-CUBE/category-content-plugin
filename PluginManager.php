@@ -29,10 +29,6 @@ class PluginManager extends AbstractPluginManager
      * @var string コピー先リソースディレクトリ
      */
     private $target;
-    /**
-     * @var string コピー元ブロックファイル
-     */
-    private $originBlock;
 
     /**
      * PluginManager constructor.

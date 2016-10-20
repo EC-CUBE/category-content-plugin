@@ -15,6 +15,7 @@ use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class CategoryContentExtension
@@ -22,6 +23,20 @@ use Symfony\Component\Form\FormView;
  */
 class CategoryContentExtension extends AbstractTypeExtension
 {
+    private $config;
+    private $app;
+
+    /**
+     * CategoryContentExtension constructor.
+     * @param array $config
+     * @param array $app
+     */
+    public function __construct($config, $app)
+    {
+        $this->config = $config;
+        $this->app = $app;
+    }
+
     /**
      * buildForm
      *
@@ -37,6 +52,15 @@ class CategoryContentExtension extends AbstractTypeExtension
                 array(
                     'label' => 'カテゴリ別表示用コンテンツ',
                     'mapped' => false,
+                    'constraints' => array(
+                        new Assert\Length(array(
+                            'max' => $this->config['text_area_len'],
+                        )),
+                    ),
+                    'attr' => array(
+                        'maxlength' => $this->config['category_text_area_len'],
+                        'placeholder' => $this->app->trans('admin.plugin.category.content'),
+                    ),
                 )
             );
     }
