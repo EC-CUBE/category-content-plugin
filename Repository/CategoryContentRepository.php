@@ -13,6 +13,10 @@ namespace Plugin\CategoryContent\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * Class CategoryContentRepository
+ * @package Plugin\CategoryContent\Repository
+ */
 class CategoryContentRepository extends EntityRepository
 {
 }

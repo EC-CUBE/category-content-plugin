@@ -25,11 +25,20 @@ class CategoryContentLegacyEvent
      */
     private $app;
 
+    /**
+     * CategoryContentLegacyEvent constructor.
+     * @param Application $app
+     */
     public function __construct($app)
     {
         $this->app = $app;
     }
 
+    /**
+     * onRenderProductListBefore
+     *
+     * @param FilterResponseEvent $event
+     */
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
         $app = $this->app;
@@ -44,8 +53,7 @@ class CategoryContentLegacyEvent
             return;
         }
 
-        $CategoryContent = $app['category_content.repository.category_content']
-            ->find($id);
+        $CategoryContent = $app['category_content.repository.category_content']->find($id);
 
         // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
         if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
@@ -56,7 +64,7 @@ class CategoryContentLegacyEvent
         $html = $response->getContent();
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
-        $dom->loadHTML('<?xml encoding="UTF-8">' . $html);
+        $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
         $dom->encoding = "UTF-8";
         $dom->formatOutput = true;
 
@@ -77,6 +85,11 @@ class CategoryContentLegacyEvent
         $event->setResponse($response);
     }
 
+    /**
+     * onRenderAdminProductCategoryEditBefore
+     *
+     * @param FilterResponseEvent $event
+     */
     public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
     {
         $app = $this->app;
@@ -88,8 +101,7 @@ class CategoryContentLegacyEvent
         $CategoryContent = null;
 
         if ($id) {
-            $CategoryContent = $app['category_content.repository.category_content']
-                ->find($id);
+            $CategoryContent = $app['category_content.repository.category_content']->find($id);
         }
 
         if (is_null($CategoryContent)) {
@@ -122,7 +134,7 @@ class CategoryContentLegacyEvent
         $newHtml = '';
         if (count($oldCrawler) > 0) {
             $oldHtml = $oldCrawler->html();
-            $newHtml = $oldHtml . $twig;
+            $newHtml = $oldHtml.$twig;
         }
 
         $html = str_replace($oldHtml, $newHtml, $html);
@@ -131,6 +143,9 @@ class CategoryContentLegacyEvent
         $event->setResponse($response);
     }
 
+    /**
+     * onAdminProductCategoryEditAfter
+     */
     public function onAdminProductCategoryEditAfter()
     {
         $app = $this->app;
@@ -156,7 +171,6 @@ class CategoryContentLegacyEvent
             $form->handleRequest($app['request']);
 
             if ($form->isValid()) {
-
                 $CategoryContent
                     ->setId($id)
                     ->setContent($form['content']->getData());

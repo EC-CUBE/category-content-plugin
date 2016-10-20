@@ -20,6 +20,10 @@ use Plugin\CategoryContent\Entity\CategoryContent;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
+/**
+ * Class CategoryContentEvent
+ * @package Plugin\CategoryContent
+ */
 class CategoryContentEvent
 {
     /**
@@ -42,7 +46,7 @@ class CategoryContentEvent
     /**
      * CategoryContentEvent constructor.
      *
-     * @param $app
+     * @param Application $app
      */
     public function __construct($app)
     {
@@ -160,7 +164,9 @@ class CategoryContentEvent
 
 #region v3.0.0 - 3.0.8 用のイベント
     /**
+     * onRenderProductListBefore
      * for v3.0.0 - 3.0.8
+     * @param FilterResponseEvent $event
      * @deprecated for since v3.0.0, to be removed in 3.1.
      */
     public function onRenderProductListBefore(FilterResponseEvent $event)
@@ -173,7 +179,10 @@ class CategoryContentEvent
     }
 
     /**
+     * onRenderAdminProductCategoryEditBefore
+     *
      * for v3.0.0 - 3.0.8
+     * @param FilterResponseEvent $event
      * @deprecated for since v3.0.0, to be removed in 3.1.
      */
     public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
@@ -186,6 +195,8 @@ class CategoryContentEvent
     }
 
     /**
+     * onAdminProductCategoryEditAfter
+     *
      * for v3.0.0 - 3.0.8
      * @deprecated for since v3.0.0, to be removed in 3.1.
      */
@@ -200,6 +211,8 @@ class CategoryContentEvent
 # endregion
 
     /**
+     * supportNewHookPoint
+     *
      * @return bool v3.0.9以降のフックポイントに対応しているか？
      */
     private function supportNewHookPoint()

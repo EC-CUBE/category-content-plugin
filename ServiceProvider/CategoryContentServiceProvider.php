@@ -15,24 +15,40 @@ use Eccube\Application;
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
 
+/**
+ * Class CategoryContentServiceProvider
+ * @package Plugin\CategoryContent\ServiceProvider
+ */
 class CategoryContentServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * register
+     *
+     * @param BaseApplication $app
+     */
     public function register(BaseApplication $app)
     {
         // Form/Extension
         $app['form.type.extensions'] = $app->share($app->extend('form.type.extensions', function ($extensions) {
             $extensions[] = new \Plugin\CategoryContent\Form\Extension\CategoryContentExtension();
+
             return $extensions;
         }));
 
         //Repository
         $app['category_content.repository.category_content'] = $app->share(function () use ($app) {
+
             return $app['orm.em']->getRepository('Plugin\CategoryContent\Entity\CategoryContent');
         });
-
     }
 
+    /**
+     * boot
+     *
+     * @param BaseApplication $app
+     */
     public function boot(BaseApplication $app)
     {
     }
 }
+
