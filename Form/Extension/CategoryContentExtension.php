@@ -54,7 +54,7 @@ class CategoryContentExtension extends AbstractTypeExtension
                     'mapped' => false,
                     'constraints' => array(
                         new Assert\Length(array(
-                            'max' => $this->config['text_area_len'],
+                            'max' => $this->config['category_text_area_len'],
                         )),
                     ),
                     'attr' => array(

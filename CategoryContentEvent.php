@@ -114,6 +114,7 @@ class CategoryContentEvent
 
         // フォームの追加
         /** @var FormInterface $builder */
+
         $builder = $event->getArgument('builder');
         $builder->add(
             self::CATEGORY_CONTENT_TEXTAREA_NAME,

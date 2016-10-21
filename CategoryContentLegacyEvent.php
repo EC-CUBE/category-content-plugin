@@ -13,6 +13,7 @@ namespace Plugin\CategoryContent;
 
 use Eccube\Application;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
@@ -39,7 +40,8 @@ class CategoryContentLegacyEvent
      *
      * @param FilterResponseEvent $event
      */
-    public function onRenderProductListBefore(FilterResponseEvent $event)
+
+    public function onRenderProductCategoryListBefore(FilterResponseEvent $event)
     {
         $app = $this->app;
 
@@ -69,7 +71,7 @@ class CategoryContentLegacyEvent
         $dom->formatOutput = true;
 
         // 挿入対象を取得
-        $navElement = $dom->getElementById('page_navi_top');
+        $navElement = $dom->getElementById('topicpath');
         if (!$navElement instanceof \DOMElement) {
             return;
         }
@@ -83,6 +85,36 @@ class CategoryContentLegacyEvent
         $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
         $response->setContent($newHtml);
         $event->setResponse($response);
+    }
+
+    /**
+     * onProductListAfter
+     */
+    public function onRenderProductCategoryListCreated()
+    {
+        $app = $this->app;
+
+        if ('POST' === $app['request']->getMethod()) {
+
+            $form = $app['form.factory']
+                ->createBuilder('admin_category')
+                ->getForm();
+            $form->handleRequest($app['request']);
+
+            if ($form->isValid()) {
+                /** @var Category $target_category */
+                //$TargetCategory = $event->getArgument('TargetCategory');
+
+                $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
+//                $CategoryContent->setId($TargetCategory->getId());
+                $CategoryContent->setContent($form['content']->getData());
+
+                $app['orm.em']->persist($CategoryContent);
+                $app['orm.em']->flush();
+            }
+        }else{
+            return;
+        }
     }
 
     /**
@@ -120,7 +152,7 @@ class CategoryContentLegacyEvent
         $form->handleRequest($request);
 
         $twig = $app->renderView(
-            'CategoryContent/Resource/template/Admin/category.twig',
+            'CategoryContent/Resource/template/admin/category.twig',
             array('form' => $form->createView())
         );
 
