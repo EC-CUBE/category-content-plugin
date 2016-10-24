@@ -12,13 +12,12 @@ const CATEGORY_ID_2 = 2;
 const CATEGORY_ID_3 = 3;
 
 /**
- * Class AdminTest
- * @package Plugin\CategoryContent\Tests\Web
+ * Class AdminTest.
  */
 class AdminTest extends AbstractAdminWebTestCase
 {
     /**
-     * Setup
+     * Setup.
      */
     public function setUp()
     {
@@ -27,7 +26,7 @@ class AdminTest extends AbstractAdminWebTestCase
     }
 
     /**
-     * カテゴリ画面のルーティング
+     * カテゴリ画面のルーティング.
      */
     public function testRenderCategory()
     {
@@ -39,7 +38,7 @@ class AdminTest extends AbstractAdminWebTestCase
     }
 
     /**
-     * testRoutingCategoryEdit
+     * testRoutingCategoryEdit.
      */
     public function testRenderCategoryEdit()
     {
@@ -51,7 +50,7 @@ class AdminTest extends AbstractAdminWebTestCase
     }
 
     /**
-     * testRoutingCategoryEdit
+     * testRoutingCategoryEdit.
      */
     public function testCategoryEdit()
     {
@@ -75,7 +74,7 @@ class AdminTest extends AbstractAdminWebTestCase
     }
 
     /**
-     * addCategoryContent
+     * addCategoryContent.
      *
      * @param $id
      * @param $content

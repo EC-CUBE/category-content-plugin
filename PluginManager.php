@@ -13,18 +13,12 @@ namespace Plugin\CategoryContent;
 
 use Eccube\Plugin\AbstractPluginManager;
 use Plugin\CategoryContent\Entity\CategoryContent;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Class PluginManager
- * @package Plugin\CategoryContent
+ * Class PluginManager.
  */
 class PluginManager extends AbstractPluginManager
 {
-    /**
-     * @var string コピー元リソースディレクトリ
-     */
-    private $origin;
     /**
      * @var string コピー先リソースディレクトリ
      */
@@ -35,43 +29,36 @@ class PluginManager extends AbstractPluginManager
      */
     public function __construct()
     {
-        // コピー元のディレクトリ
-        $this->origin = __DIR__.'/Resource/assets';
         // コピー先のディレクトリ
         $this->target = __DIR__.'/../../../html/plugin/categorycontent';
     }
     /**
-     * プラグインインストール時の処理
+     * プラグインインストール時の処理.
      *
      * @param array  $config
      * @param object $app
+     *
      * @throws \Exception
      */
     public function install($config, $app)
     {
-        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code']);
-        // リソースファイルのコピー
-        $this->copyAssets();
     }
     /**
-     * プラグイン削除時の処理
+     * プラグイン削除時の処理.
      *
      * @param array  $config
      * @param object $app
      */
     public function uninstall($config, $app)
     {
-        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code'], 0);
-        // リソースファイルの削除
-        $this->removeAssets();
     }
 
     /**
-     * プラグイン有効時の処理
+     * プラグイン有効時の処理.
      *
      * @param array  $config
      * @param object $app
-     * @return null
+     *
      * @throws \Exception
      */
     public function enable($config, $app)
@@ -100,7 +87,7 @@ class PluginManager extends AbstractPluginManager
         }
     }
     /**
-     * プラグイン無効時の処理
+     * プラグイン無効時の処理.
      *
      * @param array  $config
      * @param object $app
@@ -115,23 +102,5 @@ class PluginManager extends AbstractPluginManager
      */
     public function update($config, $app)
     {
-    }
-
-    /**
-     * 画像ファイル等をコピー
-     */
-    private function copyAssets()
-    {
-        $file = new Filesystem();
-        $file->mirror($this->origin, $this->target.'/assets');
-    }
-
-    /**
-     * コピーした画像ファイルなどを削除
-     */
-    private function removeAssets()
-    {
-        $file = new Filesystem();
-        $file->remove($this->target);
     }
 }

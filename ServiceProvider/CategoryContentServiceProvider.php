@@ -11,20 +11,18 @@
 
 namespace Plugin\CategoryContent\ServiceProvider;
 
-use Eccube\Application;
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
-use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\Yaml\Yaml;
+use Plugin\CategoryContent\Form\Extension\CategoryContentExtension;
 
 /**
- * Class CategoryContentServiceProvider
- * @package Plugin\CategoryContent\ServiceProvider
+ * Class CategoryContentServiceProvider.
  */
 class CategoryContentServiceProvider implements ServiceProviderInterface
 {
     /**
-     * register
+     * register.
      *
      * @param BaseApplication $app
      */
@@ -32,21 +30,18 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
     {
         // Form/Extension
         $app['form.type.extensions'] = $app->share($app->extend('form.type.extensions', function ($extensions) use ($app) {
-            $extensions[] = new \Plugin\CategoryContent\Form\Extension\CategoryContentExtension($app['config'], $app);
+            $extensions[] = new CategoryContentExtension($app['config'], $app);
 
             return $extensions;
         }));
 
         //Repository
         $app['category_content.repository.category_content'] = $app->share(function () use ($app) {
-
             return $app['orm.em']->getRepository('Plugin\CategoryContent\Entity\CategoryContent');
         });
 
         // メッセージ登録
         $app['translator'] = $app->share($app->extend('translator', function ($translator, \Silex\Application $app) {
-            $translator->addLoader('yaml', new YamlFileLoader());
-
             $file = __DIR__.'/../Resource/locale/message.'.$app['locale'].'.yml';
             if (file_exists($file)) {
                 $translator->addResource('yaml', $file, $app['locale']);
@@ -72,7 +67,7 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
     }
 
     /**
-     * boot
+     * boot.
      *
      * @param BaseApplication $app
      */
@@ -80,4 +75,3 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
     {
     }
 }
-

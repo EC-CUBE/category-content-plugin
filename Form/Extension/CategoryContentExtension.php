@@ -18,8 +18,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class CategoryContentExtension
- * @package Plugin\CategoryContent\Form\Extension
+ * Class CategoryContentExtension.
  */
 class CategoryContentExtension extends AbstractTypeExtension
 {
@@ -28,6 +27,7 @@ class CategoryContentExtension extends AbstractTypeExtension
 
     /**
      * CategoryContentExtension constructor.
+     *
      * @param array $config
      * @param array $app
      */
@@ -38,10 +38,10 @@ class CategoryContentExtension extends AbstractTypeExtension
     }
 
     /**
-     * buildForm
+     * buildForm.
      *
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -66,18 +66,18 @@ class CategoryContentExtension extends AbstractTypeExtension
     }
 
     /**
-     * buildView
+     * buildView.
      *
-     * @param FormView $view
+     * @param FormView      $view
      * @param FormInterface $form
-     * @param array $options
+     * @param array         $options
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
     }
 
     /**
-     * getExtendedType
+     * getExtendedType.
      *
      * @return string
      */

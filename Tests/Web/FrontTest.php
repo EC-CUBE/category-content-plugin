@@ -4,19 +4,17 @@ namespace Plugin\CategoryContent\Tests\Web;
 
 use Eccube\Tests\Web\AbstractWebTestCase;
 use Plugin\CategoryContent\Entity\CategoryContent;
-use Symfony\Component\DomCrawler\Crawler;
 
 const CATEGORY_CONTENT = 'テストカテゴリコンテンツ';
 const CATEGORY_ID = 3;
 
 /**
- * Class FrontTest
- * @package Plugin\CategoryContent\Tests\Web
+ * Class FrontTest.
  */
 class FrontTest extends AbstractWebTestCase
 {
     /**
-     * Setup
+     * Setup.
      */
     public function setUp()
     {
@@ -25,7 +23,7 @@ class FrontTest extends AbstractWebTestCase
     }
 
     /**
-     * カテゴリ画面のルーティング
+     * カテゴリ画面のルーティング.
      */
     public function testRoutingProduct()
     {
@@ -37,7 +35,7 @@ class FrontTest extends AbstractWebTestCase
     }
 
     /**
-     * addCategoryContent
+     * addCategoryContent.
      *
      * @param $id
      * @param $content

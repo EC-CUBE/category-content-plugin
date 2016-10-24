@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace DoctrineMigrations;
 
 use Doctrine\DBAL\Migrations\AbstractMigration;
@@ -16,10 +17,8 @@ use Eccube\Application;
 use Eccube\Common\Constant;
 use Doctrine\ORM\EntityManager;
 
-
 /**
- * Class Version20150706204400
- * @package DoctrineMigrations
+ * Class Version20150706204400.
  */
 class Version20150706204400 extends AbstractMigration
 {
@@ -33,7 +32,7 @@ class Version20150706204400 extends AbstractMigration
     );
 
     /**
-     * Setup data
+     * Setup data.
      *
      * @param Schema $schema
      */
@@ -47,7 +46,7 @@ class Version20150706204400 extends AbstractMigration
     }
 
     /**
-     * Remove data
+     * Remove data.
      *
      * @param Schema $schema
      */
@@ -73,14 +72,14 @@ class Version20150706204400 extends AbstractMigration
         } else {
             // this down() migration is auto-generated, please modify it to your needs
             $schema->dropTable(self::NAME);
-//            $schema->dropSequence('plg_recommend_product_recommend_product_id_seq');
         }
     }
 
     /**
-     * Create recommend table
+     * Create recommend table.
      *
      * @param Schema $schema
+     *
      * @return bool
      */
     protected function createCategoryContent(Schema $schema)
@@ -100,9 +99,8 @@ class Version20150706204400 extends AbstractMigration
         return true;
     }
 
-
     /**
-     * おすすめ商品テーブル作成
+     * おすすめ商品テーブル作成.
      *
      * @param Schema $schema
      */
@@ -121,9 +119,10 @@ class Version20150706204400 extends AbstractMigration
     }
 
     /**
-     * Get metadata
+     * Get metadata.
      *
      * @param EntityManager $em
+     *
      * @return array
      */
     protected function getMetadata(EntityManager $em)

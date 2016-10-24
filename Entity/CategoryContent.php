@@ -11,18 +11,19 @@
 
 namespace Plugin\CategoryContent\Entity;
 
+use Eccube\Entity\AbstractEntity;
+
 /**
- * Class CategoryContent
- * @package Plugin\CategoryContent\Entity
+ * Class CategoryContent.
  */
-class CategoryContent extends \Eccube\Entity\AbstractEntity
+class CategoryContent extends AbstractEntity
 {
     private $id;
 
     private $content;
 
     /**
-     * getId
+     * getId.
      *
      * @return mixed
      */
@@ -32,9 +33,10 @@ class CategoryContent extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * setId
+     * setId.
      *
      * @param int $id
+     *
      * @return $this
      */
     public function setId($id)
@@ -45,7 +47,7 @@ class CategoryContent extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * getContent
+     * getContent.
      *
      * @return mixed
      */
@@ -55,9 +57,10 @@ class CategoryContent extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * setContent
+     * setContent.
      *
      * @param text $content
+     *
      * @return $this
      */
     public function setContent($content)

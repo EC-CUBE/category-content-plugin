@@ -12,8 +12,8 @@
 namespace Plugin\CategoryContent;
 
 use Eccube\Application;
+use Plugin\CategoryContent\Entity\CategoryContent;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
@@ -28,6 +28,7 @@ class CategoryContentLegacyEvent
 
     /**
      * CategoryContentLegacyEvent constructor.
+     *
      * @param Application $app
      */
     public function __construct($app)
@@ -36,11 +37,10 @@ class CategoryContentLegacyEvent
     }
 
     /**
-     * onRenderProductListBefore
+     * onRenderProductListBefore.
      *
      * @param FilterResponseEvent $event
      */
-
     public function onRenderProductCategoryListBefore(FilterResponseEvent $event)
     {
         $app = $this->app;
@@ -58,7 +58,7 @@ class CategoryContentLegacyEvent
         $CategoryContent = $app['category_content.repository.category_content']->find($id);
 
         // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
-        if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
+        if (!$CategoryContent || isEmpty($CategoryContent->getContent())) {
             return;
         }
 
@@ -67,7 +67,7 @@ class CategoryContentLegacyEvent
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
         $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
-        $dom->encoding = "UTF-8";
+        $dom->encoding = 'UTF-8';
         $dom->formatOutput = true;
 
         // 挿入対象を取得
@@ -88,37 +88,35 @@ class CategoryContentLegacyEvent
     }
 
     /**
-     * onProductListAfter
+     * onProductListAfter.
      */
     public function onRenderProductCategoryListCreated()
     {
         $app = $this->app;
-
-        if ('POST' === $app['request']->getMethod()) {
-
-            $form = $app['form.factory']
-                ->createBuilder('admin_category')
-                ->getForm();
+        $form = $app['form.factory']
+            ->createBuilder('admin_category')
+            ->getForm();
+        if ($form->isSubmitted()) {
             $form->handleRequest($app['request']);
 
             if ($form->isValid()) {
-                /** @var Category $target_category */
+                /* @var Category $target_category */
                 //$TargetCategory = $event->getArgument('TargetCategory');
 
-                $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
+                $CategoryContent = new CategoryContent();
 //                $CategoryContent->setId($TargetCategory->getId());
                 $CategoryContent->setContent($form['content']->getData());
 
                 $app['orm.em']->persist($CategoryContent);
                 $app['orm.em']->flush();
             }
-        }else{
+        } else {
             return;
         }
     }
 
     /**
-     * onRenderAdminProductCategoryEditBefore
+     * onRenderAdminProductCategoryEditBefore.
      *
      * @param FilterResponseEvent $event
      */
@@ -137,7 +135,7 @@ class CategoryContentLegacyEvent
         }
 
         if (is_null($CategoryContent)) {
-            $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
+            $CategoryContent = new CategoryContent();
         }
 
         // DomCrawlerにHTMLを食わせる
@@ -176,7 +174,7 @@ class CategoryContentLegacyEvent
     }
 
     /**
-     * onAdminProductCategoryEditAfter
+     * onAdminProductCategoryEditAfter.
      */
     public function onAdminProductCategoryEditAfter()
     {
@@ -196,7 +194,7 @@ class CategoryContentLegacyEvent
             ->find($id);
 
         if (is_null($CategoryContent)) {
-            $CategoryContent = new \Plugin\CategoryContent\Entity\CategoryContent();
+            $CategoryContent = new CategoryContent();
         }
 
         if ('POST' === $app['request']->getMethod()) {

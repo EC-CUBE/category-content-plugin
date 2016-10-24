@@ -22,13 +22,12 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class CategoryContentEvent
- * @package Plugin\CategoryContent
+ * Class CategoryContentEvent.
  */
 class CategoryContentEvent
 {
     /**
-     * プラグインが追加するフォーム名
+     * プラグインが追加するフォーム名.
      */
     const CATEGORY_CONTENT_TEXTAREA_NAME = 'plg_category_content';
 
@@ -38,7 +37,7 @@ class CategoryContentEvent
     private $app;
 
     /**
-     * v3.0.0 - 3.0.8 向けのイベントを処理するインスタンス
+     * v3.0.0 - 3.0.8 向けのイベントを処理するインスタンス.
      *
      * @var CategoryContentLegacyEvent
      */
@@ -96,7 +95,7 @@ class CategoryContentEvent
      */
     public function onFormInitializeAdminProductCategory(EventArgs $event)
     {
-        /** @var Category $target_category */
+        /* @var Category $target_category */
         $TargetCategory = $event->getArgument('TargetCategory');
         $id = $TargetCategory->getId();
 
@@ -114,7 +113,6 @@ class CategoryContentEvent
 
         // フォームの追加
         /** @var FormInterface $builder */
-
         $builder = $event->getArgument('builder');
         $builder->add(
             self::CATEGORY_CONTENT_TEXTAREA_NAME,
@@ -148,7 +146,7 @@ class CategoryContentEvent
     {
         /** @var Application $app */
         $app = $this->app;
-        /** @var Category $target_category */
+        /* @var Category $target_category */
         $TargetCategory = $event->getArgument('TargetCategory');
         /** @var FormInterface $form */
         $form = $event->getArgument('form');
@@ -170,13 +168,15 @@ class CategoryContentEvent
         $app['orm.em']->flush($CategoryContent);
     }
 
-#region v3.0.0 - 3.0.8 用のイベント
+//region v3.0.0 - 3.0.8 用のイベント
     /**
-     * onRenderProductListBefore
+     * onRenderProductListBefore.
      *
      * for v3.0.0 - 3.0.8
+     *
      * @param FilterResponseEvent $event
-     * @deprecated for since v3.0.0, to be removed in 3.1.
+     *
+     * @deprecated for since v3.0.0, to be removed in 3.1
      */
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
@@ -188,11 +188,13 @@ class CategoryContentEvent
     }
 
     /**
-     * onRenderAdminProductCategoryEditBefore
+     * onRenderAdminProductCategoryEditBefore.
      *
      * for v3.0.0 - 3.0.8
+     *
      * @param FilterResponseEvent $event
-     * @deprecated for since v3.0.0, to be removed in 3.1.
+     *
+     * @deprecated for since v3.0.0, to be removed in 3.1
      */
     public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
     {
@@ -204,10 +206,11 @@ class CategoryContentEvent
     }
 
     /**
-     * onAdminProductCategoryEditAfter
+     * onAdminProductCategoryEditAfter.
      *
      * for v3.0.0 - 3.0.8
-     * @deprecated for since v3.0.0, to be removed in 3.1.
+     *
+     * @deprecated for since v3.0.0, to be removed in 3.1
      */
     public function onAdminProductCategoryEditAfter()
     {
@@ -217,10 +220,10 @@ class CategoryContentEvent
 
         $this->legacyEvent->onAdminProductCategoryEditAfter();
     }
-# endregion
+// endregion
 
     /**
-     * supportNewHookPoint
+     * supportNewHookPoint.
      *
      * @return bool v3.0.9以降のフックポイントに対応しているか？
      */
