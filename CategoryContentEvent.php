@@ -1,13 +1,12 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+  * This file is part of the CategoryContent plugin
+  *
+  * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+  *
+  * For the full copyright and license information, please view the LICENSE
+  * file that was distributed with this source code.
+  */
 
 namespace Plugin\CategoryContent;
 
@@ -95,7 +94,7 @@ class CategoryContentEvent
      */
     public function onFormInitializeAdminProductCategory(EventArgs $event)
     {
-        /* @var Category $target_category */
+        /* @var Category $TargetCategory */
         $TargetCategory = $event->getArgument('TargetCategory');
         $id = $TargetCategory->getId();
 
@@ -146,7 +145,7 @@ class CategoryContentEvent
     {
         /** @var Application $app */
         $app = $this->app;
-        /* @var Category $target_category */
+        /* @var Category $TargetCategory */
         $TargetCategory = $event->getArgument('TargetCategory');
         /** @var FormInterface $form */
         $form = $event->getArgument('form');

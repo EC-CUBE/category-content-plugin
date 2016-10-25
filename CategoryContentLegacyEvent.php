@@ -41,7 +41,7 @@ class CategoryContentLegacyEvent
      *
      * @param FilterResponseEvent $event
      */
-    public function onRenderProductCategoryListBefore(FilterResponseEvent $event)
+    public function onRenderProductListBefore(FilterResponseEvent $event)
     {
         $app = $this->app;
 
@@ -58,7 +58,7 @@ class CategoryContentLegacyEvent
         $CategoryContent = $app['category_content.repository.category_content']->find($id);
 
         // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
-        if (!$CategoryContent || isEmpty($CategoryContent->getContent())) {
+        if (!$CategoryContent || empty($CategoryContent->getContent())) {
             return;
         }
 
@@ -85,34 +85,6 @@ class CategoryContentLegacyEvent
         $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
         $response->setContent($newHtml);
         $event->setResponse($response);
-    }
-
-    /**
-     * onProductListAfter.
-     */
-    public function onRenderProductCategoryListCreated()
-    {
-        $app = $this->app;
-        $form = $app['form.factory']
-            ->createBuilder('admin_category')
-            ->getForm();
-        if ($form->isSubmitted()) {
-            $form->handleRequest($app['request']);
-
-            if ($form->isValid()) {
-                /* @var Category $target_category */
-                //$TargetCategory = $event->getArgument('TargetCategory');
-
-                $CategoryContent = new CategoryContent();
-//                $CategoryContent->setId($TargetCategory->getId());
-                $CategoryContent->setContent($form['content']->getData());
-
-                $app['orm.em']->persist($CategoryContent);
-                $app['orm.em']->flush();
-            }
-        } else {
-            return;
-        }
     }
 
     /**
@@ -197,17 +169,15 @@ class CategoryContentLegacyEvent
             $CategoryContent = new CategoryContent();
         }
 
-        if ('POST' === $app['request']->getMethod()) {
-            $form->handleRequest($app['request']);
+        $form->handleRequest($app['request']);
 
-            if ($form->isValid()) {
-                $CategoryContent
-                    ->setId($id)
-                    ->setContent($form['content']->getData());
+        if ($form->isValid()) {
+            $CategoryContent
+                ->setId($id)
+                ->setContent($form['content']->getData());
 
-                $app['orm.em']->persist($CategoryContent);
-                $app['orm.em']->flush();
-            }
+            $app['orm.em']->persist($CategoryContent);
+            $app['orm.em']->flush($CategoryContent);
         }
     }
 }
