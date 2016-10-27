@@ -12,7 +12,6 @@ namespace Plugin\CategoryContent;
 
 use Eccube\Application;
 use Eccube\Common\Constant;
-use Eccube\Entity\Category;
 use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Plugin\CategoryContent\Entity\CategoryContent;
