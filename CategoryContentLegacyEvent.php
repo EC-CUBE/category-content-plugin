@@ -58,7 +58,7 @@ class CategoryContentLegacyEvent
         $CategoryContent = $app['category_content.repository.category_content']->find($id);
 
         // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
-        if (!$CategoryContent || empty($CategoryContent->getContent())) {
+        if (!$CategoryContent || !$CategoryContent->getContent()) {
             return;
         }
 
