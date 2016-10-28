@@ -11,6 +11,7 @@
 namespace Plugin\CategoryContent\ServiceProvider;
 
 use Silex\Application as BaseApplication;
+use Eccube\Common\Constant;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\Yaml\Yaml;
 use Plugin\CategoryContent\Form\Extension\CategoryContentExtension;
