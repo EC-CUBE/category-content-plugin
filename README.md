@@ -4,7 +4,6 @@
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/fde598f0-5c1c-4472-9dbf-736f8ed8b19f/mini.png)](https://insight.sensiolabs.com/projects/fde598f0-5c1c-4472-9dbf-736f8ed8b19f)
 [![Coverage Status](https://coveralls.io/repos/github/eccubevn/category-content-plugin/badge.svg?branch=renewal)](https://coveralls.io/github/eccubevn/category-content-plugin)
 
-
 # category-content-plugin
 カテゴリーコンテンツ
 
