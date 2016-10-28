@@ -1,8 +1,3 @@
-# Recommended product management plug-in
-[! [Build Status] (https://travis-ci.org/eccubevn/category-content-plugin.svg?branch=renewal)] (https://travis-ci.org/eccubevn/category-content-plugin )
-[![Coverage Status](https://coveralls.io/repos/github/eccubevn/category-content-plugin/badge.svg?branch=master)](https://coveralls.io/github/eccubevn/category-content-plugin?branch=renewal)
-
-
 # category-content-plugin
 カテゴリーコンテンツ
 
