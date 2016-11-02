@@ -28,6 +28,7 @@
                 <directory suffix=".php">./Tests</directory>
                 <directory suffix=".php">./Resource</directory>
                 <file>./PluginManager.php</file>
+                <file>./CategoryContentLegacyEvent.php</file>
             </exclude>
         </whitelist>
     </filter>
