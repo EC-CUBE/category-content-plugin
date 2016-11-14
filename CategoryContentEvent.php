@@ -59,6 +59,7 @@ class CategoryContentEvent
      */
     public function onRenderProductList(TemplateEvent $event)
     {
+        log_info('CategoryContent Product/list.twig start');
         $parameters = $event->getParameters();
 
         // カテゴリIDがない場合、レンダリングしない
@@ -84,6 +85,7 @@ class CategoryContentEvent
         // twigパラメータにカテゴリコンテンツを追加
         $parameters['CategoryContent'] = $CategoryContent;
         $event->setParameters($parameters);
+        log_info('CategoryContent Product/list.twig end');
     }
 
     /**
@@ -93,6 +95,8 @@ class CategoryContentEvent
      */
     public function onFormInitializeAdminProductCategory(EventArgs $event)
     {
+        log_info('CategoryContent admin.product.category.index.initialize start');
+
         /* @var Category $TargetCategory */
         $TargetCategory = $event->getArgument('TargetCategory');
         $id = $TargetCategory->getId();
@@ -133,6 +137,7 @@ class CategoryContentEvent
 
         // 初期値を設定
         $builder->get(self::CATEGORY_CONTENT_TEXTAREA_NAME)->setData($CategoryContent->getContent());
+        log_info('CategoryContent admin.product.category.index.initialize end');
     }
 
     /**
@@ -142,6 +147,7 @@ class CategoryContentEvent
      */
     public function onAdminProductCategoryEditComplete(EventArgs $event)
     {
+        log_info('CategoryContent admin.product.category.index.complete start');
         /** @var Application $app */
         $app = $this->app;
         /* @var Category $TargetCategory */
@@ -164,6 +170,9 @@ class CategoryContentEvent
         // DB更新
         $app['orm.em']->persist($CategoryContent);
         $app['orm.em']->flush($CategoryContent);
+
+        log_info('Category Content save successful !', array('category id' => $id));
+        log_info('CategoryContent admin.product.category.index.complete end');
     }
 
 //region v3.0.0 - 3.0.8 用のイベント
@@ -178,11 +187,13 @@ class CategoryContentEvent
      */
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
+        log_info('CategoryContent eccube.event.render.product_list.before start');
         if ($this->supportNewHookPoint()) {
             return;
         }
 
         $this->legacyEvent->onRenderProductListBefore($event);
+        log_info('CategoryContent eccube.event.render.product_list.before end');
     }
 
     /**
@@ -196,11 +207,13 @@ class CategoryContentEvent
      */
     public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
     {
+        log_info('CategoryContent eccube.event.render.admin_product_category_edit.before start');
         if ($this->supportNewHookPoint()) {
             return;
         }
 
         $this->legacyEvent->onRenderAdminProductCategoryEditBefore($event);
+        log_info('CategoryContent eccube.event.render.admin_product_category_edit.before end');
     }
 
     /**
@@ -212,11 +225,13 @@ class CategoryContentEvent
      */
     public function onAdminProductCategoryEditAfter()
     {
+        log_info('CategoryContent eccube.event.controller.admin_product_category_edit.after start');
         if ($this->supportNewHookPoint()) {
             return;
         }
 
         $this->legacyEvent->onAdminProductCategoryEditAfter();
+        log_info('CategoryContent eccube.event.controller.admin_product_category_edit.after end');
     }
 // endregion
 

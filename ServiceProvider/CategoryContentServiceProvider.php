@@ -11,10 +11,13 @@
 namespace Plugin\CategoryContent\ServiceProvider;
 
 use Silex\Application as BaseApplication;
-use Eccube\Common\Constant;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\Yaml\Yaml;
 use Plugin\CategoryContent\Form\Extension\CategoryContentExtension;
+use Plugin\CategoryContent\Utils\Version;
+
+// include log functions (for 3.0.0 - 3.0.11)
+require_once(__DIR__.'/../log.php');
 
 /**
  * Class CategoryContentServiceProvider.
@@ -29,7 +32,7 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
     public function register(BaseApplication $app)
     {
         // @deprecated for since v3.0.0, to be removed in 3.1.
-        if (version_compare(Constant::VERSION, '3.0.9', '<')) {
+        if (!Version::isSupportGetInstanceFunction()) {
             // Form/Extension
             $app['form.type.extensions'] = $app->share(
                 $app->extend(
@@ -72,6 +75,11 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
 
             return $config;
         }));
+
+        // initialize logger (for 3.0.0 - 3.0.8)
+        if (!Version::isSupportGetInstanceFunction()) {
+            eccube_log_init($app);
+        }
     }
 
     /**
