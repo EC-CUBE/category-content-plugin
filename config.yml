@@ -5,4 +5,4 @@ service:
     - CategoryContentServiceProvider
 orm.path:
     - /Resource/doctrine
-event: CategoryContentEvent
+event: Event

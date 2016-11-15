@@ -8,21 +8,19 @@
   * file that was distributed with this source code.
   */
 
-namespace Plugin\CategoryContent;
+namespace Plugin\CategoryContent\Event;
 
 use Eccube\Application;
-use Eccube\Common\Constant;
 use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Plugin\CategoryContent\Entity\CategoryContent;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class CategoryContentEvent.
  */
-class CategoryContentEvent
+class Event
 {
     /**
      * プラグインが追加するフォーム名.
@@ -35,13 +33,6 @@ class CategoryContentEvent
     private $app;
 
     /**
-     * v3.0.0 - 3.0.8 向けのイベントを処理するインスタンス.
-     *
-     * @var CategoryContentLegacyEvent
-     */
-    private $legacyEvent;
-
-    /**
      * CategoryContentEvent constructor.
      *
      * @param Application $app
@@ -49,7 +40,6 @@ class CategoryContentEvent
     public function __construct($app)
     {
         $this->app = $app;
-        $this->legacyEvent = new CategoryContentLegacyEvent($app);
     }
 
     /**
@@ -173,75 +163,5 @@ class CategoryContentEvent
 
         log_info('Category Content save successful !', array('category id' => $id));
         log_info('CategoryContent admin.product.category.index.complete end');
-    }
-
-//region v3.0.0 - 3.0.8 用のイベント
-    /**
-     * onRenderProductListBefore.
-     *
-     * for v3.0.0 - 3.0.8
-     *
-     * @param FilterResponseEvent $event
-     *
-     * @deprecated for since v3.0.0, to be removed in 3.1
-     */
-    public function onRenderProductListBefore(FilterResponseEvent $event)
-    {
-        log_info('CategoryContent eccube.event.render.product_list.before start');
-        if ($this->supportNewHookPoint()) {
-            return;
-        }
-
-        $this->legacyEvent->onRenderProductListBefore($event);
-        log_info('CategoryContent eccube.event.render.product_list.before end');
-    }
-
-    /**
-     * onRenderAdminProductCategoryEditBefore.
-     *
-     * for v3.0.0 - 3.0.8
-     *
-     * @param FilterResponseEvent $event
-     *
-     * @deprecated for since v3.0.0, to be removed in 3.1
-     */
-    public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
-    {
-        log_info('CategoryContent eccube.event.render.admin_product_category_edit.before start');
-        if ($this->supportNewHookPoint()) {
-            return;
-        }
-
-        $this->legacyEvent->onRenderAdminProductCategoryEditBefore($event);
-        log_info('CategoryContent eccube.event.render.admin_product_category_edit.before end');
-    }
-
-    /**
-     * onAdminProductCategoryEditAfter.
-     *
-     * for v3.0.0 - 3.0.8
-     *
-     * @deprecated for since v3.0.0, to be removed in 3.1
-     */
-    public function onAdminProductCategoryEditAfter()
-    {
-        log_info('CategoryContent eccube.event.controller.admin_product_category_edit.after start');
-        if ($this->supportNewHookPoint()) {
-            return;
-        }
-
-        $this->legacyEvent->onAdminProductCategoryEditAfter();
-        log_info('CategoryContent eccube.event.controller.admin_product_category_edit.after end');
-    }
-// endregion
-
-    /**
-     * supportNewHookPoint.
-     *
-     * @return bool v3.0.9以降のフックポイントに対応しているか？
-     */
-    private function supportNewHookPoint()
-    {
-        return version_compare('3.0.9', Constant::VERSION, '<=');
     }
 }

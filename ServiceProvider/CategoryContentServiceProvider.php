@@ -15,6 +15,8 @@ use Silex\ServiceProviderInterface;
 use Symfony\Component\Yaml\Yaml;
 use Plugin\CategoryContent\Form\Extension\CategoryContentExtension;
 use Plugin\CategoryContent\Utils\Version;
+use Plugin\CategoryContent\Event\Event;
+use Plugin\CategoryContent\Event\EventLegacy;
 
 // include log functions (for 3.0.0 - 3.0.11)
 require_once(__DIR__.'/../log.php');
@@ -31,6 +33,14 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
      */
     public function register(BaseApplication $app)
     {
+        // イベントの追加
+        $app['eccube.plugin.categorycontent.event'] = $app->share(function () use ($app) {
+            return new Event($app);
+        });
+        $app['eccube.plugin.categorycontent.event.legacy'] = $app->share(function () use ($app) {
+            return new EventLegacy($app);
+        });
+
         // @deprecated for since v3.0.0, to be removed in 3.1.
         if (!Version::isSupportGetInstanceFunction()) {
             // Form/Extension

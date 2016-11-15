@@ -1,15 +1,13 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
-
-namespace Plugin\CategoryContent;
+  * This file is part of the CategoryContent plugin
+  *
+  * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+  *
+  * For the full copyright and license information, please view the LICENSE
+  * file that was distributed with this source code.
+  */
+namespace Plugin\CategoryContent\Event;
 
 use Eccube\Application;
 use Plugin\CategoryContent\Entity\CategoryContent;
@@ -19,7 +17,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 /**
  * Hook point implementation for v3.0.0 - 3.0.8.
  */
-class CategoryContentLegacyEvent
+class EventLegacy
 {
     /**
      * @var \Eccube\Application
@@ -43,6 +41,7 @@ class CategoryContentLegacyEvent
      */
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
+        log_info('CategoryContent eccube.event.render.product_list.before start');
         $app = $this->app;
 
         $request = $event->getRequest();
@@ -59,6 +58,8 @@ class CategoryContentLegacyEvent
 
         // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
         if (!$CategoryContent || !$CategoryContent->getContent()) {
+            log_info('CategoryContent eccube.event.render.product_list.before  not content end');
+
             return;
         }
 
@@ -73,6 +74,8 @@ class CategoryContentLegacyEvent
         // 挿入対象を取得
         $navElement = $dom->getElementById('topicpath');
         if (!$navElement instanceof \DOMElement) {
+            log_info('CategoryContent eccube.event.render.product_list.before  not have dom end');
+
             return;
         }
 
@@ -85,6 +88,7 @@ class CategoryContentLegacyEvent
         $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
         $response->setContent($newHtml);
         $event->setResponse($response);
+        log_info('CategoryContent eccube.event.render.product_list.before end');
     }
 
     /**
@@ -94,6 +98,7 @@ class CategoryContentLegacyEvent
      */
     public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
     {
+        log_info('CategoryContent eccube.event.render.admin_product_category_edit.before start');
         $app = $this->app;
         $request = $event->getRequest();
         $response = $event->getResponse();
@@ -143,6 +148,7 @@ class CategoryContentLegacyEvent
 
         $response->setContent($html);
         $event->setResponse($response);
+        log_info('CategoryContent eccube.event.render.admin_product_category_edit.before end');
     }
 
     /**
@@ -150,9 +156,12 @@ class CategoryContentLegacyEvent
      */
     public function onAdminProductCategoryEditAfter()
     {
+        log_info('CategoryContent eccube.event.controller.admin_product_category_edit.after start');
         $app = $this->app;
 
         if ('POST' !== $app['request']->getMethod()) {
+            log_info('CategoryContent eccube.event.controller.admin_product_category_edit.after not post end');
+
             return;
         }
 
@@ -179,5 +188,6 @@ class CategoryContentLegacyEvent
             $app['orm.em']->persist($CategoryContent);
             $app['orm.em']->flush($CategoryContent);
         }
+        log_info('CategoryContent eccube.event.controller.admin_product_category_edit.after end');
     }
 }
