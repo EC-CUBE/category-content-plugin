@@ -11,11 +11,11 @@
 namespace Plugin\CategoryContent;
 
 use Eccube\Application;
-use Eccube\Common\Constant;
 use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Validator\Constraints as Assert;
+use Plugin\CategoryContent\Utils\Version;
 
 /**
  * Class CategoryContentEvent.
@@ -79,7 +79,7 @@ class Event
      */
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
-        if ($this->supportNewHookPoint()) {
+        if (Version::supportNewHookPoint()) {
             return;
         }
         $this->app['eccube.plugin.categorycontent.event.legacy']->onRenderProductListBefore($event);
@@ -96,7 +96,7 @@ class Event
      */
     public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
     {
-        if ($this->supportNewHookPoint()) {
+        if (Version::supportNewHookPoint()) {
             return;
         }
         $this->app['eccube.plugin.categorycontent.event.legacy']->onRenderAdminProductCategoryEditBefore($event);
@@ -111,20 +111,10 @@ class Event
      */
     public function onAdminProductCategoryEditAfter()
     {
-        if ($this->supportNewHookPoint()) {
+        if (Version::supportNewHookPoint()) {
             return;
         }
         $this->app['eccube.plugin.categorycontent.event.legacy']->onAdminProductCategoryEditAfter();
     }
 // endregion
-
-    /**
-     * supportNewHookPoint.
-     *
-     * @return bool v3.0.9以降のフックポイントに対応しているか？
-     */
-    private function supportNewHookPoint()
-    {
-        return version_compare('3.0.9', Constant::VERSION, '<=');
-    }
 }

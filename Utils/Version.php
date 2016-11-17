@@ -37,4 +37,13 @@ class Version
     {
         return version_compare(Constant::VERSION, '3.0.12', '>=');
     }
+
+    /**
+     * check version to support new hookpoint
+     * @return mixed
+     */
+    public static function supportNewHookPoint()
+    {
+        return version_compare(Constant::VERSION, '3.0.9', '>=');
+    }
 }
