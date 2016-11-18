@@ -27,7 +27,7 @@ class EventLegacy
     /**
      * CategoryContentLegacyEvent constructor.
      *
-     * @param Application $app
+     * @param object $app
      */
     public function __construct($app)
     {

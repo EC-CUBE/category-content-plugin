@@ -40,6 +40,7 @@ class Version
 
     /**
      * check version to support new hookpoint
+     *
      * @return mixed
      */
     public static function supportNewHookPoint()

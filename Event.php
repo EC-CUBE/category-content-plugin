@@ -14,7 +14,6 @@ use Eccube\Application;
 use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\Validator\Constraints as Assert;
 use Plugin\CategoryContent\Utils\Version;
 
 /**

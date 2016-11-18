@@ -13,7 +13,9 @@ namespace Plugin\CategoryContent\Tests\Web;
 use Eccube\Tests\Web\Admin\AbstractAdminWebTestCase;
 use Plugin\CategoryContent\Entity\CategoryContent;
 
-const CATEGORY_CONTENT = 'テストカテゴリコンテンツ';
+if (!defined('CATEGORY_CONTENT')) {
+    define('CATEGORY_CONTENT', 'テストカテゴリコンテンツ');
+}
 const CATEGORY_NAME = 'テストカテゴリ';
 const CATEGORY_ID_1 = 1;
 const CATEGORY_ID_2 = 2;

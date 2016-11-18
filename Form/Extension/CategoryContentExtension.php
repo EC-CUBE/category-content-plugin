@@ -10,6 +10,7 @@
 
 namespace Plugin\CategoryContent\Form\Extension;
 
+use Eccube\Application;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -19,18 +20,18 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CategoryContentExtension extends AbstractTypeExtension
 {
-    private $config;
+    /**
+     * @var Application
+     */
     private $app;
 
     /**
      * CategoryContentExtension constructor.
      *
-     * @param array $config
-     * @param array $app
+     * @param object $app
      */
-    public function __construct($config, $app)
+    public function __construct($app)
     {
-        $this->config = $config;
         $this->app = $app;
     }
 
@@ -52,11 +53,11 @@ class CategoryContentExtension extends AbstractTypeExtension
                     'required' => false,
                     'constraints' => array(
                         new Assert\Length(array(
-                            'max' => $this->config['category_text_area_len'],
+                            'max' => $this->app['config']['category_text_area_len'],
                         )),
                     ),
                     'attr' => array(
-                        'maxlength' => $this->config['category_text_area_len'],
+                        'maxlength' => $this->app['config']['category_text_area_len'],
                         'placeholder' => $this->app->trans('admin.plugin.category.content'),
                     ),
                 )

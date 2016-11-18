@@ -12,6 +12,7 @@ namespace Plugin\CategoryContent\ServiceProvider;
 
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
+use Symfony\Component\Translation\Translator;
 use Symfony\Component\Yaml\Yaml;
 use Plugin\CategoryContent\Form\Extension\CategoryContentExtension;
 use Plugin\CategoryContent\Utils\Version;
@@ -48,7 +49,7 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
                 $app->extend(
                     'form.type.extensions',
                     function ($extensions) use ($app) {
-                        $extensions[] = new CategoryContentExtension($app['config'], $app);
+                        $extensions[] = new CategoryContentExtension($app);
 
                         return $extensions;
                     }
@@ -62,7 +63,7 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
         });
 
         // メッセージ登録
-        $app['translator'] = $app->share($app->extend('translator', function ($translator, \Silex\Application $app) {
+        $app['translator'] = $app->share($app->extend('translator', function (Translator $translator, \Silex\Application $app) {
             $file = __DIR__.'/../Resource/locale/message.'.$app['locale'].'.yml';
             if (file_exists($file)) {
                 $translator->addResource('yaml', $file, $app['locale']);
