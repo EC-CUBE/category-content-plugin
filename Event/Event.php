@@ -70,10 +70,10 @@ class Event
         // twigコードにカテゴリコンテンツを挿入
         $snipet = '<div class="row" style="margin-left: 0px;" >{{ CategoryContent.content|raw }}</div>';
         $sourceOrigin = $event->getSource();
-        //find related product mark
-        if (strpos($sourceOrigin, self::CATEGORY_CONTENT_TAG)) {
-            log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => self::CATEGORY_CONTENT_TAG));
-            $search = self::CATEGORY_CONTENT_TAG;
+        //find category content mark
+        $search = self::CATEGORY_CONTENT_TAG;
+        if (strpos($sourceOrigin, $search)) {
+            log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => $search));
             $replace = $search.$snipet;
         } else {
             $search = '<div id="result_info_box"';

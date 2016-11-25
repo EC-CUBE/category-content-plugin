@@ -7,9 +7,9 @@
   * For the full copyright and license information, please view the LICENSE
   * file that was distributed with this source code.
   */
+
 namespace Plugin\CategoryContent\Event;
 
-use Eccube\Application;
 use Plugin\CategoryContent\Entity\CategoryContent;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -24,6 +24,7 @@ class EventLegacy
      */
     private $app;
 
+    const CATEGORY_CONTENT_TAG = '<!--# category-content-plugin-tag #-->';
     /**
      * CategoryContentLegacyEvent constructor.
      *
@@ -64,19 +65,38 @@ class EventLegacy
         }
 
         // 書き換えhtmlの初期化
-        $snipet = '<div class="row" style="margin-left: 0px;" >'.$CategoryContent->getContent().'</div>';
-        $sourceOrigin = $response->getContent();
-        //find related product mark
-        if (strpos($sourceOrigin, self::CATEGORY_CONTENT_TAG)) {
-            log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => self::CATEGORY_CONTENT_TAG));
-            $search = self::CATEGORY_CONTENT_TAG;
+        $html = $response->getContent();
+        $search = self::CATEGORY_CONTENT_TAG;
+        if (strpos($html, $search)) {
+            log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => $search));
+            $snipet = '<div class="row" style="margin-left: 0px;" >'.$CategoryContent->getContent().'</div>';
             $replace = $search.$snipet;
+            $newHtml = str_replace($search, $replace, $html);
+            $response->setContent($newHtml);
         } else {
-            $search = '<!-- ▲topicpath▲ -->';
-            $replace = $search.$snipet;
+            libxml_use_internal_errors(true);
+            $dom = new \DOMDocument();
+            $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
+            $dom->encoding = 'UTF-8';
+            $dom->formatOutput = true;
+
+           // 挿入対象を取得
+           $navElement = $dom->getElementById('topicpath');
+            if (!$navElement instanceof \DOMElement) {
+                log_info('CategoryContent eccube.event.render.product_list.before  not have dom end');
+
+                return;
+            }
+
+            $template = $dom->createDocumentFragment();
+            $template->appendXML(htmlspecialchars($CategoryContent->getContent()));
+
+            $node = $dom->importNode($template, true);
+            $navElement->insertBefore($node);
+
+            $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
+            $response->setContent($newHtml);
         }
-        $source = str_replace($search, $replace, $sourceOrigin);
-        $response->setContent($source);
         $event->setResponse($response);
         log_info('CategoryContent eccube.event.render.product_list.before end');
     }
