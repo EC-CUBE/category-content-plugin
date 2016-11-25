@@ -64,29 +64,19 @@ class EventLegacy
         }
 
         // 書き換えhtmlの初期化
-        $html = $response->getContent();
-        libxml_use_internal_errors(true);
-        $dom = new \DOMDocument();
-        $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
-        $dom->encoding = 'UTF-8';
-        $dom->formatOutput = true;
-
-        // 挿入対象を取得
-        $navElement = $dom->getElementById('topicpath');
-        if (!$navElement instanceof \DOMElement) {
-            log_info('CategoryContent eccube.event.render.product_list.before  not have dom end');
-
-            return;
+        $snipet = '<div class="row" style="margin-left: 0px;" >'.$CategoryContent->getContent().'</div>';
+        $sourceOrigin = $response->getContent();
+        //find related product mark
+        if (strpos($sourceOrigin, self::CATEGORY_CONTENT_TAG)) {
+            log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => self::CATEGORY_CONTENT_TAG));
+            $search = self::CATEGORY_CONTENT_TAG;
+            $replace = $search.$snipet;
+        } else {
+            $search = '<!-- ▲topicpath▲ -->';
+            $replace = $search.$snipet;
         }
-
-        $template = $dom->createDocumentFragment();
-        $template->appendXML(htmlspecialchars($CategoryContent->getContent()));
-
-        $node = $dom->importNode($template, true);
-        $navElement->insertBefore($node);
-
-        $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
-        $response->setContent($newHtml);
+        $source = str_replace($search, $replace, $sourceOrigin);
+        $response->setContent($source);
         $event->setResponse($response);
         log_info('CategoryContent eccube.event.render.product_list.before end');
     }

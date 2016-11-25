@@ -32,6 +32,8 @@ class Event
      */
     private $app;
 
+    const CATEGORY_CONTENT_TAG = '<!--# category-content-plugin-tag #-->';
+
     /**
      * CategoryContentEvent constructor.
      *
@@ -66,10 +68,18 @@ class Event
         }
 
         // twigコードにカテゴリコンテンツを挿入
-        $snipet = '<div class="row">{{ CategoryContent.content|raw }}</div>';
-        $search = '<div id="result_info_box"';
-        $replace = $snipet.$search;
-        $source = str_replace($search, $replace, $event->getSource());
+        $snipet = '<div class="row" style="margin-left: 0px;" >{{ CategoryContent.content|raw }}</div>';
+        $sourceOrigin = $event->getSource();
+        //find related product mark
+        if (strpos($sourceOrigin, self::CATEGORY_CONTENT_TAG)) {
+            log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => self::CATEGORY_CONTENT_TAG));
+            $search = self::CATEGORY_CONTENT_TAG;
+            $replace = $search.$snipet;
+        } else {
+            $search = '<div id="result_info_box"';
+            $replace = $snipet.$search;
+        }
+        $source = str_replace($search, $replace, $sourceOrigin);
         $event->setSource($source);
 
         // twigパラメータにカテゴリコンテンツを追加

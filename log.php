@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-use Plugin\CategoryContent\Utils\Version;
+use Plugin\CategoryContent\Util\Version;
 
 if (Version::isSupportLogFunction()) {
     return;

@@ -14,7 +14,8 @@ use Eccube\Application;
 use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Plugin\CategoryContent\Utils\Version;
+use Symfony\Component\Validator\Constraints as Assert;
+use Plugin\CategoryContent\Util\Version;
 
 /**
  * Class CategoryContentEvent.
@@ -78,7 +79,7 @@ class Event
      */
     public function onRenderProductListBefore(FilterResponseEvent $event)
     {
-        if (Version::supportNewHookPoint()) {
+        if (Version::isSupportNewHookPoint()) {
             return;
         }
         $this->app['eccube.plugin.categorycontent.event.legacy']->onRenderProductListBefore($event);
@@ -95,7 +96,7 @@ class Event
      */
     public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
     {
-        if (Version::supportNewHookPoint()) {
+        if (Version::isSupportNewHookPoint()) {
             return;
         }
         $this->app['eccube.plugin.categorycontent.event.legacy']->onRenderAdminProductCategoryEditBefore($event);
@@ -110,7 +111,7 @@ class Event
      */
     public function onAdminProductCategoryEditAfter()
     {
-        if (Version::supportNewHookPoint()) {
+        if (Version::isSupportNewHookPoint()) {
             return;
         }
         $this->app['eccube.plugin.categorycontent.event.legacy']->onAdminProductCategoryEditAfter();

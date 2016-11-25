@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\CategoryContent\Utils;
+namespace Plugin\CategoryContent\Util;
 
 use Eccube\Common\Constant;
 
@@ -43,7 +43,7 @@ class Version
      *
      * @return mixed
      */
-    public static function supportNewHookPoint()
+    public static function isSupportNewHookPoint()
     {
         return version_compare(Constant::VERSION, '3.0.9', '>=');
     }
