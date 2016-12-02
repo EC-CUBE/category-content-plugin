@@ -4,7 +4,7 @@ Product/list.twig:
 
 # admin page event
 admin.product.category.index.initialize:
-    - [onFormInitializeAdminProductCategory, NORMAL]
+    - [onAdminProductCategoryFormInitialize, NORMAL]
 admin.product.category.index.complete:
     - [onAdminProductCategoryEditComplete, NORMAL]
 

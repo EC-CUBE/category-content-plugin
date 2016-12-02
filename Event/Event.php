@@ -61,7 +61,7 @@ class Event
 
         // 登録がない、もしくは空で登録されている場合、レンダリングをしない
         $Category = $parameters['Category'];
-        $CategoryContent = $this->app['category_content.repository.category_content']
+        $CategoryContent = $this->app['eccube.plugin.category_content.repository.category_content']
             ->find($Category->getId());
         if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
             return;
@@ -93,7 +93,7 @@ class Event
      *
      * @param EventArgs $event
      */
-    public function onFormInitializeAdminProductCategory(EventArgs $event)
+    public function onAdminProductCategoryFormInitialize(EventArgs $event)
     {
         log_info('CategoryContent admin.product.category.index.initialize start');
 
@@ -105,7 +105,7 @@ class Event
 
         if ($id) {
             // カテゴリ編集時は初期値を取得
-            $CategoryContent = $this->app['category_content.repository.category_content']->find($id);
+            $CategoryContent = $this->app['eccube.plugin.category_content.repository.category_content']->find($id);
         }
 
         // カテゴリ新規登録またはコンテンツが未登録の場合
@@ -157,7 +157,7 @@ class Event
 
         // 現在のエンティティを取得
         $id = $TargetCategory->getId();
-        $CategoryContent = $app['category_content.repository.category_content']->find($id);
+        $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']->find($id);
         if (is_null($CategoryContent)) {
             $CategoryContent = new CategoryContent();
         }

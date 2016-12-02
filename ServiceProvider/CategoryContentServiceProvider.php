@@ -58,19 +58,13 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
         }
 
         //Repository
-        $app['category_content.repository.category_content'] = $app->share(function () use ($app) {
+        $app['eccube.plugin.category_content.repository.category_content'] = $app->share(function () use ($app) {
             return $app['orm.em']->getRepository('Plugin\CategoryContent\Entity\CategoryContent');
         });
 
         // メッセージ登録
-        $app['translator'] = $app->share($app->extend('translator', function (Translator $translator, \Silex\Application $app) {
-            $file = __DIR__.'/../Resource/locale/message.'.$app['locale'].'.yml';
-            if (file_exists($file)) {
-                $translator->addResource('yaml', $file, $app['locale']);
-            }
-
-            return $translator;
-        }));
+        $file = __DIR__.'/../Resource/locale/message.'.$app['locale'].'.yml';
+        $app['translator']->addResource('yaml', $file, $app['locale']);
 
         //Config
         $app['config'] = $app->share($app->extend('config', function ($config) {

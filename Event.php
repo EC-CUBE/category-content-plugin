@@ -51,9 +51,9 @@ class Event
      *
      * @param EventArgs $event
      */
-    public function onFormInitializeAdminProductCategory(EventArgs $event)
+    public function onAdminProductCategoryFormInitialize(EventArgs $event)
     {
-        $this->app['eccube.plugin.categorycontent.event']->onFormInitializeAdminProductCategory($event);
+        $this->app['eccube.plugin.categorycontent.event']->onAdminProductCategoryFormInitialize($event);
     }
 
     /**

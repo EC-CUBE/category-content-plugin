@@ -55,7 +55,7 @@ class EventLegacy
             return;
         }
 
-        $CategoryContent = $app['category_content.repository.category_content']->find($id);
+        $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']->find($id);
 
         // 登録がない、もしくは空で登録されている場合、レンダリングを変更しない
         if (!$CategoryContent || !$CategoryContent->getContent()) {
@@ -118,7 +118,7 @@ class EventLegacy
         $CategoryContent = null;
 
         if ($id) {
-            $CategoryContent = $app['category_content.repository.category_content']->find($id);
+            $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']->find($id);
         }
 
         if (is_null($CategoryContent)) {
@@ -181,7 +181,7 @@ class EventLegacy
             ->createBuilder('admin_category')
             ->getForm();
 
-        $CategoryContent = $app['category_content.repository.category_content']
+        $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']
             ->find($id);
 
         if (is_null($CategoryContent)) {
