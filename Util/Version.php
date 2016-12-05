@@ -39,7 +39,7 @@ class Version
     }
 
     /**
-     * check version to support new hookpoint.
+     * check version to support new hook point.
      *
      * @return mixed
      */
