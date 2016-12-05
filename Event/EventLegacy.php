@@ -64,36 +64,44 @@ class EventLegacy
             return;
         }
 
-        // 書き換えhtmlの初期化
+        // twigから挿入するhtmlを生成する
+        $snipet = $this->app->renderView(
+            'CategoryContent/Resource/template/default/category_content.twig',
+            array('PluginCategoryContent' => $CategoryContent)
+        );
+
+        // htmlの挿入処理
         $html = $response->getContent();
         $search = self::CATEGORY_CONTENT_TAG;
         if (strpos($html, $search)) {
+            // タグの位置に挿入する場合
             log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => $search));
-            $snipet = '<div class="row" style="margin-left: 0px;" >'.$CategoryContent->getContent().'</div>';
             $replace = $search.$snipet;
             $newHtml = str_replace($search, $replace, $html);
             $response->setContent($newHtml);
         } else {
+            // Elementを探して挿入する場合
             libxml_use_internal_errors(true);
             $dom = new \DOMDocument();
             $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
             $dom->encoding = 'UTF-8';
             $dom->formatOutput = true;
 
-           // 挿入対象を取得
-           $navElement = $dom->getElementById('topicpath');
+            // 基準となるElementを取得
+            $navElement = $dom->getElementById('topicpath');
             if (!$navElement instanceof \DOMElement) {
                 log_info('CategoryContent eccube.event.render.product_list.before  not have dom end');
 
                 return;
             }
 
+            // 挿入するNodeを生成
             $template = $dom->createDocumentFragment();
-            $template->appendXML(htmlspecialchars($CategoryContent->getContent()));
-
+            $template->appendXML(htmlspecialchars($snipet));
             $node = $dom->importNode($template, true);
-            $navElement->insertBefore($node);
 
+            // 基準となるElementの直後にNodeを挿入し、Responsを書き換え
+            $navElement->parentNode->insertBefore($node, $navElement->nextSibling);
             $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
             $response->setContent($newHtml);
         }
