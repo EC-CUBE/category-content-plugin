@@ -12,10 +12,8 @@ namespace Plugin\CategoryContent\ServiceProvider;
 
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
-use Symfony\Component\Translation\Translator;
 use Symfony\Component\Yaml\Yaml;
 use Plugin\CategoryContent\Form\Extension\CategoryContentExtension;
-use Plugin\CategoryContent\Util\Version;
 use Plugin\CategoryContent\Event\Event;
 use Plugin\CategoryContent\Event\EventLegacy;
 
