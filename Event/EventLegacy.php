@@ -51,7 +51,7 @@ class EventLegacy
         $id = $request->query->get('category_id');
 
         // category_idがない場合、レンダリングを変更しない
-        if (is_null($id)) {
+        if (!$id) {
             return;
         }
 
@@ -129,7 +129,7 @@ class EventLegacy
             $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']->find($id);
         }
 
-        if (is_null($CategoryContent)) {
+        if (!$CategoryContent) {
             $CategoryContent = new CategoryContent();
         }
 
@@ -192,7 +192,7 @@ class EventLegacy
         $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']
             ->find($id);
 
-        if (is_null($CategoryContent)) {
+        if (!$CategoryContent) {
             $CategoryContent = new CategoryContent();
         }
 

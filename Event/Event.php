@@ -55,7 +55,7 @@ class Event
         $parameters = $event->getParameters();
 
         // カテゴリIDがない場合、レンダリングしない
-        if (is_null($parameters['Category'])) {
+        if (!$parameters['Category']) {
             return;
         }
 
@@ -63,7 +63,7 @@ class Event
         $Category = $parameters['Category'];
         $CategoryContent = $this->app['eccube.plugin.category_content.repository.category_content']
             ->find($Category->getId());
-        if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
+        if (!$CategoryContent || $CategoryContent->getContent() == '') {
             return;
         }
 
@@ -111,7 +111,7 @@ class Event
         }
 
         // カテゴリ新規登録またはコンテンツが未登録の場合
-        if (is_null($CategoryContent)) {
+        if (!$CategoryContent) {
             $CategoryContent = new CategoryContent();
         }
 
@@ -160,7 +160,7 @@ class Event
         // 現在のエンティティを取得
         $id = $TargetCategory->getId();
         $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']->find($id);
-        if (is_null($CategoryContent)) {
+        if (!$CategoryContent) {
             $CategoryContent = new CategoryContent();
         }
 
