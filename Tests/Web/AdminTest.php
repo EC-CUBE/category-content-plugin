@@ -76,7 +76,7 @@ class AdminTest extends AbstractAdminWebTestCase
         );
         $this->assertTrue($this->client->getResponse()->isRedirect($this->app->url('admin_product_category')));
 
-        $categoryName = $this->app['category_content.repository.category_content']->find(CATEGORY_ID_1)->getContent();
+        $categoryName = $this->app['eccube.plugin.category_content.repository.category_content']->find(CATEGORY_ID_1)->getContent();
 
         $this->expected = CATEGORY_CONTENT;
         $this->actual = $categoryName;

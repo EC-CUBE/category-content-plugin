@@ -38,12 +38,12 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
         $app['eccube.plugin.categorycontent.event'] = $app->share(function () use ($app) {
             return new Event($app);
         });
-        $app['eccube.plugin.categorycontent.event.legacy'] = $app->share(function () use ($app) {
+        $app['eccube.plugin.categorycontent.event_legacy'] = $app->share(function () use ($app) {
             return new EventLegacy($app);
         });
 
         // @deprecated for since v3.0.0, to be removed in 3.1.
-        if (!Version::isSupportGetInstanceFunction()) {
+        if (!method_exists('Eccube\Application', 'getInstance')) {
             // Form/Extension
             $app['form.type.extensions'] = $app->share(
                 $app->extend(
@@ -82,7 +82,7 @@ class CategoryContentServiceProvider implements ServiceProviderInterface
         }));
 
         // initialize logger (for 3.0.0 - 3.0.8)
-        if (!Version::isSupportGetInstanceFunction()) {
+        if (!method_exists('Eccube\Application', 'getInstance')) {
             eccube_log_init($app);
         }
     }

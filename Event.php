@@ -81,7 +81,7 @@ class Event
         if (Version::isSupportNewHookPoint()) {
             return;
         }
-        $this->app['eccube.plugin.categorycontent.event.legacy']->onRenderProductListBefore($event);
+        $this->app['eccube.plugin.categorycontent.event_legacy']->onRenderProductListBefore($event);
     }
 
     /**
@@ -98,7 +98,7 @@ class Event
         if (Version::isSupportNewHookPoint()) {
             return;
         }
-        $this->app['eccube.plugin.categorycontent.event.legacy']->onRenderAdminProductCategoryEditBefore($event);
+        $this->app['eccube.plugin.categorycontent.event_legacy']->onRenderAdminProductCategoryEditBefore($event);
     }
 
     /**
@@ -113,7 +113,7 @@ class Event
         if (Version::isSupportNewHookPoint()) {
             return;
         }
-        $this->app['eccube.plugin.categorycontent.event.legacy']->onAdminProductCategoryEditAfter();
+        $this->app['eccube.plugin.categorycontent.event_legacy']->onAdminProductCategoryEditAfter();
     }
 // endregion
 }
