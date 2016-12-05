@@ -68,14 +68,15 @@ class Event
         }
 
         // twigコードにカテゴリコンテンツを挿入
-        $snipet = '<div class="row" style="margin-left: 0px;" >{{ CategoryContent.content|raw }}</div>';
+        $snipet = $this->app['twig']->getLoader()->getSource('CategoryContent/Resource/template/default/category_content.twig');
         $sourceOrigin = $event->getSource();
-        //find category content mark
         $search = self::CATEGORY_CONTENT_TAG;
         if (strpos($sourceOrigin, $search)) {
+            // タグの位置に挿入する場合
             log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => $search));
             $replace = $search.$snipet;
         } else {
+            // Elementを探して挿入する場合
             $search = '<div id="result_info_box"';
             $replace = $snipet.$search;
         }
@@ -83,8 +84,9 @@ class Event
         $event->setSource($source);
 
         // twigパラメータにカテゴリコンテンツを追加
-        $parameters['CategoryContent'] = $CategoryContent;
+        $parameters['PluginCategoryContent'] = $CategoryContent;
         $event->setParameters($parameters);
+
         log_info('CategoryContent Product/list.twig end');
     }
 
