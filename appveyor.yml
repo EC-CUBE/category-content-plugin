@@ -18,7 +18,7 @@ environment:
     DBPASS: "Password12!"
     DBUSER: "root"
     BASE_DIR: "C:/projects/ec-cube"
-    PLUGIN_BASE_DIR: "C:/projects/Category-content-plugin"
+    PLUGIN_BASE_DIR: "C:/projects/category-content-plugin"
     ECCUBE_VERSION: "master"
     PLUGIN_CODE: "CategoryContent"
   matrix:
