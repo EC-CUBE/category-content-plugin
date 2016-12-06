@@ -12,6 +12,7 @@
 namespace Plugin\CategoryContent;
 
 use Eccube\Application;
+use Eccube\Util\Str;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
@@ -42,7 +43,7 @@ class CategoryContentLegacyEvent
         $id = $request->query->get('category_id');
 
         // category_idがない場合、レンダリングを変更しない
-        if (is_null($id)) {
+        if (Str::isBlank($id)) {
             return;
         }
 
@@ -117,7 +118,7 @@ class CategoryContentLegacyEvent
         $oldCrawler = $crawler
             ->filter('form')
             ->first();
-
+        
         // DomCrawlerからHTMLを吐き出す
         $html = $crawler->html();
         $oldHtml = '';
@@ -164,7 +165,7 @@ class CategoryContentLegacyEvent
                     ->setContent($form['content']->getData());
 
                 $app['orm.em']->persist($CategoryContent);
-                $app['orm.em']->flush();
+                $app['orm.em']->flush($CategoryContent);
             }
         }
     }
