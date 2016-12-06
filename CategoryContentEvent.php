@@ -1,29 +1,29 @@
 <?php
 /*
-  * This file is part of the CategoryContent plugin
-  *
-  * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
-  *
-  * For the full copyright and license information, please view the LICENSE
-  * file that was distributed with this source code.
-  */
+* This file is part of EC-CUBE
+*
+* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
+* http://www.lockon.co.jp/
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
 
-namespace Plugin\CategoryContent\Event;
+namespace Plugin\CategoryContent;
 
 use Eccube\Application;
+use Eccube\Common\Constant;
+use Eccube\Entity\Category;
 use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Plugin\CategoryContent\Entity\CategoryContent;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
-/**
- * Class CategoryContentEvent.
- */
-class Event
+class CategoryContentEvent
 {
     /**
-     * プラグインが追加するフォーム名.
+     * プラグインが追加するフォーム名
      */
     const CATEGORY_CONTENT_TEXTAREA_NAME = 'plg_category_content';
 
@@ -32,16 +32,22 @@ class Event
      */
     private $app;
 
-    const CATEGORY_CONTENT_TAG = '<!--# category-content-plugin-tag #-->';
+    /**
+     * v3.0.0 - 3.0.8 向けのイベントを処理するインスタンス
+     *
+     * @var CategoryContentLegacyEvent
+     */
+    private $legacyEvent;
 
     /**
      * CategoryContentEvent constructor.
      *
-     * @param object $app
+     * @param $app
      */
     public function __construct($app)
     {
         $this->app = $app;
+        $this->legacyEvent = new CategoryContentLegacyEvent($app);
     }
 
     /**
@@ -51,43 +57,31 @@ class Event
      */
     public function onRenderProductList(TemplateEvent $event)
     {
-        log_info('CategoryContent Product/list.twig start');
         $parameters = $event->getParameters();
 
         // カテゴリIDがない場合、レンダリングしない
-        if (!$parameters['Category']) {
+        if (is_null($parameters['Category'])) {
             return;
         }
 
         // 登録がない、もしくは空で登録されている場合、レンダリングをしない
         $Category = $parameters['Category'];
-        $CategoryContent = $this->app['eccube.plugin.category_content.repository.category_content']
+        $CategoryContent = $this->app['category_content.repository.category_content']
             ->find($Category->getId());
-        if (!$CategoryContent || $CategoryContent->getContent() == '') {
+        if (is_null($CategoryContent) || $CategoryContent->getContent() == '') {
             return;
         }
 
         // twigコードにカテゴリコンテンツを挿入
-        $snipet = $this->app['twig']->getLoader()->getSource('CategoryContent/Resource/template/default/category_content.twig');
-        $sourceOrigin = $event->getSource();
-        $search = self::CATEGORY_CONTENT_TAG;
-        if (strpos($sourceOrigin, $search)) {
-            // タグの位置に挿入する場合
-            log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => $search));
-            $replace = $search.$snipet;
-        } else {
-            // Elementを探して挿入する場合
-            $search = '<div id="result_info_box"';
-            $replace = $snipet.$search;
-        }
-        $source = str_replace($search, $replace, $sourceOrigin);
+        $snipet = '<div class="row">{{ CategoryContent.content | raw }}</div>';
+        $search = '<div id="result_info_box"';
+        $replace = $snipet.$search;
+        $source = str_replace($search, $replace, $event->getSource());
         $event->setSource($source);
 
         // twigパラメータにカテゴリコンテンツを追加
-        $parameters['PluginCategoryContent'] = $CategoryContent;
+        $parameters['CategoryContent'] = $CategoryContent;
         $event->setParameters($parameters);
-
-        log_info('CategoryContent Product/list.twig end');
     }
 
     /**
@@ -95,11 +89,9 @@ class Event
      *
      * @param EventArgs $event
      */
-    public function onAdminProductCategoryFormInitialize(EventArgs $event)
+    public function onFormInitializeAdminProductCategory(EventArgs $event)
     {
-        log_info('CategoryContent admin.product.category.index.initialize start');
-
-        /* @var Category $TargetCategory */
+        /** @var Category $target_category */
         $TargetCategory = $event->getArgument('TargetCategory');
         $id = $TargetCategory->getId();
 
@@ -107,11 +99,11 @@ class Event
 
         if ($id) {
             // カテゴリ編集時は初期値を取得
-            $CategoryContent = $this->app['eccube.plugin.category_content.repository.category_content']->find($id);
+            $CategoryContent = $this->app['category_content.repository.category_content']->find($id);
         }
 
         // カテゴリ新規登録またはコンテンツが未登録の場合
-        if (!$CategoryContent) {
+        if (is_null($CategoryContent)) {
             $CategoryContent = new CategoryContent();
         }
 
@@ -125,21 +117,14 @@ class Event
                 'required' => false,
                 'label' => false,
                 'mapped' => false,
-                'constraints' => array(
-                    new Assert\Length(array(
-                        'max' => $this->app['config']['category_text_area_len'],
-                    )),
-                ),
                 'attr' => array(
-                    'maxlength' => $this->app['config']['category_text_area_len'],
-                    'placeholder' => $this->app->trans('admin.plugin.category.content'),
+                    'placeholder' => 'コンテンツを入力してください(HTMLタグ使用可)',
                 ),
             )
         );
 
         // 初期値を設定
         $builder->get(self::CATEGORY_CONTENT_TEXTAREA_NAME)->setData($CategoryContent->getContent());
-        log_info('CategoryContent admin.product.category.index.initialize end');
     }
 
     /**
@@ -149,18 +134,17 @@ class Event
      */
     public function onAdminProductCategoryEditComplete(EventArgs $event)
     {
-        log_info('CategoryContent admin.product.category.index.complete start');
         /** @var Application $app */
         $app = $this->app;
-        /* @var Category $TargetCategory */
+        /** @var Category $target_category */
         $TargetCategory = $event->getArgument('TargetCategory');
         /** @var FormInterface $form */
         $form = $event->getArgument('form');
 
         // 現在のエンティティを取得
         $id = $TargetCategory->getId();
-        $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']->find($id);
-        if (!$CategoryContent) {
+        $CategoryContent = $app['category_content.repository.category_content']->find($id);
+        if (is_null($CategoryContent)) {
             $CategoryContent = new CategoryContent();
         }
 
@@ -172,8 +156,54 @@ class Event
         // DB更新
         $app['orm.em']->persist($CategoryContent);
         $app['orm.em']->flush($CategoryContent);
+    }
 
-        log_info('Category Content save successful !', array('category id' => $id));
-        log_info('CategoryContent admin.product.category.index.complete end');
+#region v3.0.0 - 3.0.8 用のイベント
+    /**
+     * for v3.0.0 - 3.0.8
+     * @deprecated for since v3.0.0, to be removed in 3.1.
+     */
+    public function onRenderProductListBefore(FilterResponseEvent $event)
+    {
+        if ($this->supportNewHookPoint()) {
+            return;
+        }
+
+        $this->legacyEvent->onRenderProductListBefore($event);
+    }
+
+    /**
+     * for v3.0.0 - 3.0.8
+     * @deprecated for since v3.0.0, to be removed in 3.1.
+     */
+    public function onRenderAdminProductCategoryEditBefore(FilterResponseEvent $event)
+    {
+        if ($this->supportNewHookPoint()) {
+            return;
+        }
+
+        $this->legacyEvent->onRenderAdminProductCategoryEditBefore($event);
+    }
+
+    /**
+     * for v3.0.0 - 3.0.8
+     * @deprecated for since v3.0.0, to be removed in 3.1.
+     */
+    public function onAdminProductCategoryEditAfter()
+    {
+        if ($this->supportNewHookPoint()) {
+            return;
+        }
+
+        $this->legacyEvent->onAdminProductCategoryEditAfter();
+    }
+# endregion
+
+    /**
+     * @return bool v3.0.9以降のフックポイントに対応しているか？
+     */
+    private function supportNewHookPoint()
+    {
+        return version_compare('3.0.9', Constant::VERSION, '<=');
     }
 }
