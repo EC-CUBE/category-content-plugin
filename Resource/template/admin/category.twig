@@ -1,21 +1,16 @@
 {#
- # This file is part of EC-CUBE
- #
- # Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
- # http://www.lockon.co.jp/
- #
- # For the full copyright and license information, please view the LICENSE
- # file that was distributed with this source code.
- #}
-{#
- # deprecated 3.0.0 - 3.0.8
- # 3.0.9以降では使用しません.
- #}
+  This file is part of the CategoryContent plugin
+
+  Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+
+  For the full copyright and license information, please view the LICENSE
+  file that was distributed with this source code.
+#}
+
 <br />
-<div class="form-group">
-    {{ form_label(form.content) }}
-    <div class="col-sm-9 col-lg-10" style="margin-top: 20px;">
-        {{ form_widget(form.content, { attr : { 'rows' : 15, style : 'font-size:12px' } }) }}
+<div class="form-group col-sm-9 col-lg-10">
+    <div class="col-sm-9 col-lg-10" style="margin-top: 20px;padding-left: 0px;">
+        {{ form_widget(form.content, { attr : { 'rows' : 15, style : 'font-size:12px;width:100%' } }) }}
         {{ form_errors(form.content) }}
     </div>
 </div>
