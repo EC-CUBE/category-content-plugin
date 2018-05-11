@@ -39,7 +39,7 @@ class FrontTest extends AbstractWebTestCase
     {
         $crawler = $this->client->request(
             'GET',
-            $this->app->url('product_list', array('category_id' => CATEGORY_ID))
+            $this->generateUrl('product_list', ['category_id' => CATEGORY_ID])
         );
         $this->assertContains(CATEGORY_CONTENT, $crawler->html());
     }
@@ -56,7 +56,7 @@ class FrontTest extends AbstractWebTestCase
         $CategoryContent
             ->setId($id)
             ->setContent($content);
-        $this->app['orm.em']->persist($CategoryContent);
-        $this->app['orm.em']->flush($CategoryContent);
+        $this->entityManager->persist($CategoryContent);
+        $this->entityManager->flush();
     }
 }

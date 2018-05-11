@@ -11,14 +11,30 @@
 namespace Plugin\CategoryContent\Entity;
 
 use Eccube\Entity\AbstractEntity;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class CategoryContent.
+ *
+ * @ORM\Table(name="plg_category_content")
+ * @ORM\Entity(repositoryClass="Plugin\CategoryContent\Repository\CategoryContentRepository")
  */
 class CategoryContent extends AbstractEntity
 {
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="category_id", type="integer", options={"unsigned":false})
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
+     */
     private $id;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="content", type="string", nullable=true)
+     */
     private $content;
 
     /**

@@ -10,8 +10,11 @@
 
 namespace Plugin\CategoryContent;
 
+use Eccube\Application;
 use Eccube\Plugin\AbstractPluginManager;
 use Plugin\CategoryContent\Entity\CategoryContent;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class PluginManager.
@@ -19,44 +22,22 @@ use Plugin\CategoryContent\Entity\CategoryContent;
 class PluginManager extends AbstractPluginManager
 {
     /**
-     * プラグインインストール時の処理.
-     *
-     * @param array  $config
-     * @param object $app
-     *
-     * @throws \Exception
-     */
-    public function install($config, $app)
-    {
-    }
-    /**
-     * プラグイン削除時の処理.
-     *
-     * @param array  $config
-     * @param object $app
-     */
-    public function uninstall($config, $app)
-    {
-        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code'], 0);
-    }
-
-    /**
      * プラグイン有効時の処理.
      *
-     * @param array  $config
-     * @param object $app
-     *
-     * @throws \Exception
+     * @param array $config
+     * @param Application|null $app
+     * @param ContainerInterface|null $container
+     * @return void
      */
-    public function enable($config, $app)
+    public function enable($config = [], Application $app = null, ContainerInterface $container = null)
     {
-        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code']);
-        $em = $app['orm.em'];
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $container->get('doctrine.orm.entity_manager');
 
         // serviceで定義している情報が取得できないため、直接呼び出す
         try {
             // EC-CUBE3.0.3対応
-            $CategoryContent = $em->getRepository('Plugin\CategoryContent\Entity\CategoryContent')->find(1);
+            $CategoryContent = $entityManager->getRepository(CategoryContent::class)->find(1);
         } catch (\Exception $e) {
             return null;
         }
@@ -64,26 +45,8 @@ class PluginManager extends AbstractPluginManager
             $CategoryContent = new CategoryContent();
             // IDは1固定
             $CategoryContent->setId(1);
-            $em->persist($CategoryContent);
-            $em->flush($CategoryContent);
+            $entityManager->persist($CategoryContent);
+            $entityManager->flush();
         }
-    }
-    /**
-     * プラグイン無効時の処理.
-     *
-     * @param array  $config
-     * @param object $app
-     */
-    public function disable($config, $app)
-    {
-    }
-
-    /**
-     * @param array  $config
-     * @param object $app
-     */
-    public function update($config, $app)
-    {
-        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code']);
     }
 }

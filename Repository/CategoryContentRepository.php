@@ -10,11 +10,23 @@
 
 namespace Plugin\CategoryContent\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Eccube\Repository\AbstractRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Plugin\CategoryContent\Entity\CategoryContent;
 
 /**
  * Class CategoryContentRepository.
  */
-class CategoryContentRepository extends EntityRepository
+class CategoryContentRepository extends AbstractRepository
 {
+    /**
+     * CategoryContentRepository constructor.
+     *
+     * @param ManagerRegistry $registry
+     * @param string $entityClass
+     */
+    public function __construct(ManagerRegistry $registry, string $entityClass = CategoryContent::class)
+    {
+        parent::__construct($registry, $entityClass);
+    }
 }

@@ -16,6 +16,12 @@ use Eccube\Event\TemplateEvent;
 use Plugin\CategoryContent\Entity\CategoryContent;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Eccube\Entity\Category;
+use Plugin\CategoryContent\Repository\CategoryContentRepository;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Eccube\Common\EccubeConfig;
+use Symfony\Component\Translation\TranslatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class CategoryContentEvent.
@@ -35,13 +41,51 @@ class Event
     const CATEGORY_CONTENT_TAG = '<!--# category-content-plugin-tag #-->';
 
     /**
-     * CategoryContentEvent constructor.
-     *
-     * @param object $app
+     * @var CategoryContentRepository
      */
-    public function __construct($app)
-    {
-        $this->app = $app;
+    protected $categoryContentRepository;
+
+    /**
+     * @var \Twig_Environment
+     */
+    protected $twigEnvironment;
+
+    /**
+     * @var EccubeConfig
+     */
+    protected $eccubeConfig;
+
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    protected $entityManager;
+
+    /**
+     * Event constructor.
+     *
+     * @param \Twig_Environment $twigEnvironment
+     * @param CategoryContentRepository $categoryContentRepository
+     * @param EccubeConfig $eccubeConfig
+     * @param TranslatorInterface $translator
+     * @param EntityManagerInterface $entityManager
+     */
+    public function __construct(
+        \Twig_Environment $twigEnvironment,
+        CategoryContentRepository $categoryContentRepository,
+        EccubeConfig $eccubeConfig,
+        TranslatorInterface $translator,
+        EntityManagerInterface $entityManager
+    ) {
+        $this->twigEnvironment = $twigEnvironment;
+        $this->categoryContentRepository = $categoryContentRepository;
+        $this->eccubeConfig = $eccubeConfig;
+        $this->translator = $translator;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -60,20 +104,29 @@ class Event
         }
 
         // 登録がない、もしくは空で登録されている場合、レンダリングをしない
+        /** @var Category $Category */
         $Category = $parameters['Category'];
-        $CategoryContent = $this->app['eccube.plugin.category_content.repository.category_content']
-            ->find($Category->getId());
+        /** @var CategoryContent $CategoryContent */
+        $CategoryContent = $this->categoryContentRepository->find($Category->getId());
         if (!$CategoryContent || $CategoryContent->getContent() == '') {
             return;
         }
 
         // twigコードにカテゴリコンテンツを挿入
-        $snipet = $this->app['twig']->getLoader()->getSource('CategoryContent/Resource/template/default/category_content.twig');
+        try {
+            $snipet = $this->twigEnvironment->getLoader()
+                ->getSourceContext('CategoryContent/Resource/template/default/category_content.twig')
+                ->getCode();
+        } catch (\Exception $e) {
+            $snipet = '';
+            log_error('CategoryContent Plugin', [$e]);
+        }
+
         $sourceOrigin = $event->getSource();
         $search = self::CATEGORY_CONTENT_TAG;
         if (strpos($sourceOrigin, $search)) {
             // タグの位置に挿入する場合
-            log_info('Render category content with ', array('CATEGORY_CONTENT_TAG' => $search));
+            log_info('Render category content with ', ['CATEGORY_CONTENT_TAG' => $search]);
             $replace = $search.$snipet;
         } else {
             // Elementを探して挿入する場合
@@ -95,7 +148,7 @@ class Event
      *
      * @param EventArgs $event
      */
-    public function onAdminProductCategoryFormInitialize(EventArgs $event)
+    public function onAdminProductCategoryIndexInitialize(EventArgs $event)
     {
         log_info('CategoryContent admin.product.category.index.initialize start');
 
@@ -107,7 +160,7 @@ class Event
 
         if ($id) {
             // カテゴリ編集時は初期値を取得
-            $CategoryContent = $this->app['eccube.plugin.category_content.repository.category_content']->find($id);
+            $CategoryContent = $this->categoryContentRepository->find($id);
         }
 
         // カテゴリ新規登録またはコンテンツが未登録の場合
@@ -120,21 +173,21 @@ class Event
         $builder = $event->getArgument('builder');
         $builder->add(
             self::CATEGORY_CONTENT_TEXTAREA_NAME,
-            'textarea',
-            array(
+            TextareaType::class,
+            [
                 'required' => false,
                 'label' => false,
                 'mapped' => false,
-                'constraints' => array(
-                    new Assert\Length(array(
-                        'max' => $this->app['config']['category_text_area_len'],
-                    )),
-                ),
-                'attr' => array(
-                    'maxlength' => $this->app['config']['category_text_area_len'],
-                    'placeholder' => $this->app->trans('admin.plugin.category.content'),
-                ),
-            )
+                'constraints' => [
+                    new Assert\Length([
+                        'max' => $this->eccubeConfig['category_text_area_len'],
+                    ]),
+                ],
+                'attr' => [
+                    'maxlength' => $this->eccubeConfig['category_text_area_len'],
+                    'placeholder' => $this->translator->trans('admin.plugin.category.content'),
+                ],
+            ]
         );
 
         // 初期値を設定
@@ -159,7 +212,7 @@ class Event
 
         // 現在のエンティティを取得
         $id = $TargetCategory->getId();
-        $CategoryContent = $app['eccube.plugin.category_content.repository.category_content']->find($id);
+        $CategoryContent = $this->categoryContentRepository->find($id);
         if (!$CategoryContent) {
             $CategoryContent = new CategoryContent();
         }
@@ -170,10 +223,10 @@ class Event
             ->setContent($form[self::CATEGORY_CONTENT_TEXTAREA_NAME]->getData());
 
         // DB更新
-        $app['orm.em']->persist($CategoryContent);
-        $app['orm.em']->flush($CategoryContent);
+        $this->entityManager->persist($CategoryContent);
+        $this->entityManager->flush();
 
-        log_info('Category Content save successful !', array('category id' => $id));
+        log_info('Category Content save successful !', ['category id' => $id]);
         log_info('CategoryContent admin.product.category.index.complete end');
     }
 }
