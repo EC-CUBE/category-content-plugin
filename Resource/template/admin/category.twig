@@ -1,16 +1,43 @@
-{#
-  This file is part of the CategoryContent plugin
-
-  Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
-
-  For the full copyright and license information, please view the LICENSE
-  file that was distributed with this source code.
-#}
-
-<br />
-<div class="form-group col-sm-9 col-lg-10">
-    <div class="col-sm-9 col-lg-10" style="margin-top: 20px;padding-left: 0px;">
-        {{ form_widget(form.content, { attr : { 'rows' : 15, style : 'font-size:12px;width:100%' } }) }}
-        {{ form_errors(form.content) }}
+{% block stylesheet %}
+    {# TODO:
+    - Fix to display popup confirmation block delete.
+    - Move to css file or unset z-index = 1 for css .list-group-item
+    - Need set only once
+    #}
+    <style type="text/css">
+        li.list-group-item {
+            z-index: inherit !important;
+        }
+    </style>
+{% endblock %}
+<a class="btn btn-ec-actionIcon mr-3 action-edit-content"
+   data-toggle="modal" data-target="#modalCategoryContent_{{ Category.id }}"
+   title="{{ 'admin.plugin.category.content.edit'|trans }}">
+    <i class="fa fa-sticky-note-o fa-lg text-secondary"></i>
+</a>
+<div class="modal" id="modalCategoryContent_{{ Category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirm" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold">{{ 'admin.plugin.category.content'|trans }}</h5>
+                <button class="close" type="button" data-dismiss="modal"
+                        aria-label="Close"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {# form #}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ec-sub" type="button"
+                        data-dismiss="modal">
+                    {{ 'common.label.cancel'|trans }}
+                </button>
+                <form method="post" action="">
+                    <button class="btn btn-ec-conversion" type="submit">
+                        {{ 'common.label.save'|trans }}
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

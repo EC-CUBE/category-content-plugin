@@ -11,7 +11,7 @@ trait CategoryTrait
     /**
      * @var string
      *
-     * @ORM\Column(name="plg_category_content", type="string", length=1024 nullable=true)
+     * @ORM\Column(name="plg_category_content", type="string", length=1024, nullable=true)
      */
     protected $content;
 
