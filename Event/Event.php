@@ -41,11 +41,6 @@ class Event
     const CATEGORY_CONTENT_TAG = '<!--# category-content-plugin-tag #-->';
 
     /**
-     * @var CategoryContentRepository
-     */
-    protected $categoryContentRepository;
-
-    /**
      * @var \Twig_Environment
      */
     protected $twigEnvironment;
@@ -69,20 +64,17 @@ class Event
      * Event constructor.
      *
      * @param \Twig_Environment $twigEnvironment
-     * @param CategoryContentRepository $categoryContentRepository
      * @param EccubeConfig $eccubeConfig
      * @param TranslatorInterface $translator
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         \Twig_Environment $twigEnvironment,
-        CategoryContentRepository $categoryContentRepository,
         EccubeConfig $eccubeConfig,
         TranslatorInterface $translator,
         EntityManagerInterface $entityManager
     ) {
         $this->twigEnvironment = $twigEnvironment;
-        $this->categoryContentRepository = $categoryContentRepository;
         $this->eccubeConfig = $eccubeConfig;
         $this->translator = $translator;
         $this->entityManager = $entityManager;
@@ -95,6 +87,7 @@ class Event
      */
     public function onRenderProductList(TemplateEvent $event)
     {
+        return;
         log_info('CategoryContent Product/list.twig start');
         $parameters = $event->getParameters();
 
@@ -150,6 +143,7 @@ class Event
      */
     public function onAdminProductCategoryIndexInitialize(EventArgs $event)
     {
+        return;
         log_info('CategoryContent admin.product.category.index.initialize start');
 
         /* @var Category $TargetCategory */
@@ -202,6 +196,7 @@ class Event
      */
     public function onAdminProductCategoryEditComplete(EventArgs $event)
     {
+        return;
         log_info('CategoryContent admin.product.category.index.complete start');
         /** @var Application $app */
         $app = $this->app;
