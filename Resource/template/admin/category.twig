@@ -18,26 +18,42 @@
 <div class="modal" id="modalCategoryContent_{{ Category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirm" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title font-weight-bold">{{ 'admin.plugin.category.content'|trans }}</h5>
-                <button class="close" type="button" data-dismiss="modal"
-                        aria-label="Close"><span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                {# form #}
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-ec-sub" type="button"
-                        data-dismiss="modal">
-                    {{ 'common.label.cancel'|trans }}
-                </button>
-                <form method="post" action="">
+            <form method="POST" action="{{ (Parent and Parent.id) ? url('admin_product_category_show', {'parent_id': Parent.id}) : url('admin_product_category') }}" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold">{{ 'admin.plugin.category.content'|trans }}</h5>
+                    <button class="close" type="button" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ form_widget(form._token) }}
+                    <div class="row mb-3">
+                        <div class="col-2">
+                            <label>{{ 'admin.plugin.category.form.name'|trans }}</label>
+                        </div>
+                        <div class="col text-left">
+                            {{ Category.name }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2">
+                            <label>{{ 'admin.plugin.category.form.content'|trans }}</label>
+                        </div>
+                        <div class="col">
+                            {{ form_widget(form.content, { attr : {'class': 'form-control', 'rows': 10}}) }}
+                            {{ form_errors(form.content) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ec-sub" type="button" data-dismiss="modal">
+                        {{ 'common.label.cancel'|trans }}
+                    </button>
                     <button class="btn btn-ec-conversion" type="submit">
                         {{ 'common.label.save'|trans }}
                     </button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

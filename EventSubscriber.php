@@ -10,33 +10,16 @@
 
 namespace Plugin\CategoryContent;
 
-use Eccube\Application;
-use Eccube\Event\EventArgs;
-use Eccube\Event\TemplateEvent;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Plugin\CategoryContent\Event\Event;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormEvent;
+use Eccube\Entity\Category;
 
 /**
  * Class CategoryContentEvent.
  */
 class EventSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var Event
-     */
-    private $event;
-
-    /**
-     * EventSubscriber constructor.
-     *
-     * @param Event $event
-     */
-    public function __construct(Event $event)
-    {
-        $this->event = $event;
-    }
-
     /**
      * {@inheritdoc}
      *
@@ -45,40 +28,31 @@ class EventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-//            'Product/list.twig' => ['onRenderProductList', 10],
-            'admin.product.category.index.initialize' => ['onAdminProductCategoryIndexInitialize', 10],
-//            'admin.product.category.index.complete' => ['onAdminProductCategoryEditComplete', 10],
+            FormEvents::PRE_SUBMIT => ['onFormPreSubmit', 10]
         ];
     }
 
-
     /**
-     * 商品一覧画面にカテゴリコンテンツを表示する.
+     * On pre submit
      *
-     * @param TemplateEvent $event
+     * @param FormEvent $event
      */
-    public function onRenderProductList(TemplateEvent $event)
+    public function onFormPreSubmit(FormEvent $event)
     {
-        $this->event->onRenderProductList($event);
-    }
+        /** @var Category $Category */
+        $Category = $event->getForm()->getData();
+        if (!$Category instanceof Category || !$Category->getId()) {
+            return;
+        }
+        
+        $submitData = $event->getData();
+        if (!isset($submitData['content'])) {
+            $submitData['content'] = $Category->getContent();
+        }
+        if (!isset($submitData['name'])) {
+            $submitData['name'] = $Category->getName();
+        }
 
-    /**
-     * 管理画面：カテゴリ登録画面に, カテゴリコンテンツのフォームを追加する.
-     *
-     * @param EventArgs $event
-     */
-    public function onAdminProductCategoryIndexInitialize(EventArgs $event)
-    {
-        $this->event->onAdminProductCategoryIndexInitialize($event);
-    }
-
-    /**
-     * 管理画面：カテゴリ登録画面で、登録処理を行う.
-     *
-     * @param EventArgs $event
-     */
-    public function onAdminProductCategoryEditComplete(EventArgs $event)
-    {
-        $this->event->onAdminProductCategoryEditComplete($event);
+        $event->setData($submitData);
     }
 }

@@ -11,8 +11,8 @@
 namespace Plugin\CategoryContent\Tests\Web;
 
 use Eccube\Tests\Web\Admin\AbstractAdminWebTestCase;
-use Plugin\CategoryContent\Entity\CategoryContent;
-use Plugin\CategoryContent\Repository\CategoryContentRepository;
+use Eccube\Repository\CategoryRepository;
+use Eccube\Entity\Category;
 
 if (!defined('CATEGORY_CONTENT')) {
     define('CATEGORY_CONTENT', 'テストカテゴリコンテンツ');
@@ -28,9 +28,14 @@ const CATEGORY_ID_3 = 3;
 class AdminTest extends AbstractAdminWebTestCase
 {
     /**
-     * @var CategoryContentRepository
+     * @var CategoryRepository
      */
-    protected $categoryContentRepository;
+    protected $categoryRepository;
+
+    /**
+     * @var \Eccube\Entity\Category
+     */
+    protected $Category;
 
     /**
      * {@inheritdoc}
@@ -39,8 +44,8 @@ class AdminTest extends AbstractAdminWebTestCase
     {
         parent::setUp();
 
-        $this->categoryContentRepository = $this->container->get(CategoryContentRepository::class);
-
+        $this->categoryRepository = $this->container->get(CategoryRepository::class);
+        $this->Category = $this->categoryRepository->find(CATEGORY_ID_3);
         $this->addCategoryContent(CATEGORY_ID_3, CATEGORY_CONTENT);
     }
 
@@ -63,7 +68,7 @@ class AdminTest extends AbstractAdminWebTestCase
     {
         $crawler = $this->client->request(
             'GET',
-            $this->generateUrl('admin_product_category_edit', ['id' => CATEGORY_ID_3])
+            $this->generateUrl('admin_product_category_show', ['parent_id' => $this->Category->getParent()->getId()])
         );
         $this->assertContains(CATEGORY_CONTENT, $crawler->html());
     }
@@ -75,18 +80,18 @@ class AdminTest extends AbstractAdminWebTestCase
     {
         $this->client->request(
             'POST',
-            $this->generateUrl('admin_product_category_edit', ['id' => CATEGORY_ID_1]),
+            $this->generateUrl('admin_product_category'),
             [
-                'admin_category' => [
+                'category_'.CATEGORY_ID_1 => [
                     '_token' => 'dummy',
                     'name' => CATEGORY_NAME,
-                    'plg_category_content' => CATEGORY_CONTENT,
+                    'content' => CATEGORY_CONTENT,
                 ],
             ]
         );
         $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('admin_product_category')));
 
-        $categoryName = $this->categoryContentRepository->find(CATEGORY_ID_1)->getContent();
+        $categoryName = $this->categoryRepository->find(CATEGORY_ID_1)->getContent();
 
         $this->expected = CATEGORY_CONTENT;
         $this->actual = $categoryName;
@@ -101,11 +106,9 @@ class AdminTest extends AbstractAdminWebTestCase
      */
     private function addCategoryContent($id, $content)
     {
-        $CategoryContent = new CategoryContent();
-        $CategoryContent
-            ->setId($id)
-            ->setContent($content);
-        $this->entityManager->persist($CategoryContent);
-        $this->entityManager->flush();
+        /** @var Category $Category */
+        $Category = $this->categoryRepository->find($id);
+        $Category->setContent($content);
+        $this->categoryRepository->save($Category);
     }
 }
