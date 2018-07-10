@@ -10,15 +10,25 @@
         }
     </style>
 {% endblock %}
-<a class="btn btn-ec-actionIcon mr-3 action-edit-content"
-   data-toggle="modal" data-target="#modalCategoryContent_{{ Category.id }}"
-   title="{{ 'admin.plugin.category.content.edit'|trans }}">
-    <i class="fa fa-sticky-note-o fa-lg text-secondary"></i>
-</a>
+<script>
+$(function () {
+    $('.list-group-item.sortable-item').each(function () {
+        var id = $(this).data('id');
+        var a = $('<a></a>').addClass('btn btn-ec-actionIcon mr-3 action-edit-content')
+            .attr('data-toggle', 'modal')
+            .attr('data-target', '#modalCategoryContent_' + id)
+            .attr('title', '{{ 'admin.plugin.category.content.edit'|trans }}')
+            .append('<i class="fa fa-sticky-note-o fa-lg text-secondary"></i>');
+        $(this).find('.col-auto.text-right').append(a);
+    });
+});
+</script>
+
+{% for Category in Categories %}
 <div class="modal" id="modalCategoryContent_{{ Category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirm" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="POST" action="{{ (Parent and Parent.id) ? url('admin_product_category_show', {'parent_id': Parent.id}) : url('admin_product_category') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ (Parent and Parent.id) ? url('admin_product_category_show', {'parent_id': Parent.id}) : url('admin_product_category') }}" enctype="application/x-www-form-urlencoded">
                 <div class="modal-header">
                     <h5 class="modal-title font-weight-bold">{{ 'admin.plugin.category.content'|trans }}</h5>
                     <button class="close" type="button" data-dismiss="modal"
@@ -26,7 +36,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    {{ form_widget(form._token) }}
+                    <input type="hidden" name="{{ forms[Category.id]._token.vars.full_name }}" value="{{ forms[Category.id]._token.vars.value }}">
                     <div class="row mb-3">
                         <div class="col-2">
                             <label>{{ 'admin.plugin.category.form.name'|trans }}</label>
@@ -40,8 +50,8 @@
                             <label>{{ 'admin.plugin.category.form.content'|trans }}</label>
                         </div>
                         <div class="col">
-                            {{ form_widget(form.content, { attr : {'class': 'form-control', 'rows': 10}}) }}
-                            {{ form_errors(form.content) }}
+                            {{ form_widget(forms[Category.id].content, { attr : {'class': 'form-control', 'rows': 10}}) }}
+                            {{ form_errors(forms[Category.id].content) }}
                         </div>
                     </div>
                 </div>
@@ -57,3 +67,4 @@
         </div>
     </div>
 </div>
+{% endfor %}

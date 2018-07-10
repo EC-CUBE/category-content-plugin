@@ -8,7 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Eccube\Common\EccubeConfig;
 use Symfony\Component\Translation\TranslatorInterface;
-use Plugin\CategoryContent\EventSubscriber;
+use Plugin\CategoryContent\CategoryContentEvent;
 
 class CategoryTypeExtension extends AbstractTypeExtension
 {
@@ -53,7 +53,7 @@ class CategoryTypeExtension extends AbstractTypeExtension
                 'maxlength' => $this->eccubeConfig['category_text_area_len'],
                 'placeholder' => $this->translator->trans('admin.plugin.category.content'),
             ],
-        ])->addEventSubscriber(new EventSubscriber());
+        ])->addEventSubscriber(new CategoryContentEvent());
     }
 
 

@@ -14,11 +14,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
 use Eccube\Entity\Category;
+use Eccube\Event\TemplateEvent;
 
 /**
  * Class CategoryContentEvent.
  */
-class EventSubscriber implements EventSubscriberInterface
+class CategoryContentEvent implements EventSubscriberInterface
 {
     /**
      * {@inheritdoc}
@@ -28,7 +29,9 @@ class EventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            FormEvents::PRE_SUBMIT => ['onFormPreSubmit', 10]
+            FormEvents::PRE_SUBMIT => ['onFormPreSubmit', 10],
+            '@admin/Product/category.twig' => ['onTemplateAdminProductCategory', 10],
+            'Product/list.twig' => ['onTemplateProductList', 10]
         ];
     }
 
@@ -41,6 +44,7 @@ class EventSubscriber implements EventSubscriberInterface
     {
         /** @var Category $Category */
         $Category = $event->getForm()->getData();
+
         if (!$Category instanceof Category || !$Category->getId()) {
             return;
         }
@@ -54,5 +58,25 @@ class EventSubscriber implements EventSubscriberInterface
         }
 
         $event->setData($submitData);
+    }
+
+    /**
+     * Append JS to add edit content button
+     *
+     * @param TemplateEvent $templateEvent
+     */
+    public function onTemplateAdminProductCategory(TemplateEvent $templateEvent)
+    {
+        $templateEvent->addSnippet('@CategoryContent/admin/category.twig');
+    }
+
+    /**
+     * Append JS to display category content
+     *
+     * @param TemplateEvent $templateEvent
+     */
+    public function onTemplateProductList(TemplateEvent $templateEvent)
+    {
+        $templateEvent->addSnippet('@CategoryContent/default/category_content.twig');
     }
 }
