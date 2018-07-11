@@ -47,10 +47,10 @@ class CategoryTypeExtension extends AbstractTypeExtension
     {
         $builder->add('content', TextareaType::class, [
             'constraints' => [
-                new Assert\Length(['min' => 0, 'max' => $this->eccubeConfig['category_text_area_len']]),
+                new Assert\Length(['min' => 0, 'max' => $this->eccubeConfig['category_content.category_text_area_len']]),
             ],
             'attr' => [
-                'maxlength' => $this->eccubeConfig['category_text_area_len'],
+                'maxlength' => $this->eccubeConfig['category_content.category_text_area_len'],
                 'placeholder' => $this->translator->trans('category_content.admin.category.content'),
             ],
         ])->addEventSubscriber(new CategoryContentEvent());

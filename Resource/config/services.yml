@@ -1,2 +1,2 @@
 parameters:
-    category_text_area_len: 4000
+    category_content.category_text_area_len: 4000
