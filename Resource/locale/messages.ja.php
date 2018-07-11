@@ -1,7 +1,7 @@
 <?php
 return [
-    'admin.plugin.category.content' => 'コンテンツを入力してください(HTMLタグ使用可)',
-    'admin.plugin.category.content.edit' => 'コンテンツ編集',
-    'admin.plugin.category.form.name' => '名前を',
-    'admin.plugin.category.form.content' => 'コンテンツ',
+    'category_content.admin.category.content' => 'コンテンツを入力してください(HTMLタグ使用可)',
+    'category_content.admin.category.content.edit' => 'コンテンツ編集',
+    'category_content.admin.category.form.name' => '名前を',
+    'category_content.admin.category.form.content' => 'コンテンツ',
 ];

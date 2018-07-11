@@ -51,7 +51,7 @@ class CategoryTypeExtension extends AbstractTypeExtension
             ],
             'attr' => [
                 'maxlength' => $this->eccubeConfig['category_text_area_len'],
-                'placeholder' => $this->translator->trans('admin.plugin.category.content'),
+                'placeholder' => $this->translator->trans('category_content.admin.category.content'),
             ],
         ])->addEventSubscriber(new CategoryContentEvent());
     }
