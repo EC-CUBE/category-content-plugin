@@ -5,8 +5,6 @@
         });
     </script>
     <div id="plugin_category_content_content">
-        <div class="row no-margin">
-            {{ Category.content|raw }}
-        </div>
+        {{ eccube_block_category_content({'Category': Category}) }}
     </div>
 {% endif %}
