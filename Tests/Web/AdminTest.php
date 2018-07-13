@@ -88,13 +88,14 @@ class AdminTest extends AbstractAdminWebTestCase
                 'category_'.CATEGORY_ID_1 => [
                     '_token' => 'dummy',
                     'name' => CATEGORY_NAME,
-                    'content' => CATEGORY_CONTENT,
+                    'category_content_content' => CATEGORY_CONTENT,
                 ],
             ]
         );
+
         $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('admin_product_category')));
 
-        $categoryName = $this->categoryRepository->find(CATEGORY_ID_1)->getContent();
+        $categoryName = $this->categoryRepository->find(CATEGORY_ID_1)->getCategoryContentContent();
 
         $this->expected = CATEGORY_CONTENT;
         $this->actual = $categoryName;
@@ -111,7 +112,7 @@ class AdminTest extends AbstractAdminWebTestCase
     {
         /** @var Category $Category */
         $Category = $this->categoryRepository->find($id);
-        $Category->setContent($content);
+        $Category->setCategoryContentContent($content);
         $this->categoryRepository->save($Category);
     }
 }

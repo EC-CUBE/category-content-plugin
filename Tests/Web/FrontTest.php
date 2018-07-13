@@ -37,7 +37,6 @@ class FrontTest extends AbstractWebTestCase
      */
     public function setUp()
     {
-        $this->markTestSkipped('Skip due to manual modify template');
         parent::setUp();
         $this->categoryRepository = $this->container->get(CategoryRepository::class);
         $this->addCategoryContent(CATEGORY_ID, CATEGORY_CONTENT);
@@ -65,7 +64,7 @@ class FrontTest extends AbstractWebTestCase
     {
         /** @var Category $Category */
         $Category = $this->categoryRepository->find($id);
-        $Category->setContent($content);
+        $Category->setCategoryContentContent($content);
         $this->categoryRepository->save($Category);
     }
 }
