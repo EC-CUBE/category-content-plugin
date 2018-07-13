@@ -2,9 +2,10 @@
     <script>
         $(function () {
             $('.ec-topicpath').after($('#plugin_category_content_content').html());
+            $('#plugin_category_content_content').empty();
         });
     </script>
-    <div id="plugin_category_content_content">
+    <div id="plugin_category_content_content" class="d-none">
         {{ eccube_block_category_content({'Category': Category}) }}
     </div>
 {% endif %}

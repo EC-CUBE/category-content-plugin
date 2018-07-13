@@ -53,8 +53,8 @@ class CategoryContentEvent implements EventSubscriberInterface
         }
 
         $submitData = $event->getData();
-        if (!isset($submitData['content'])) {
-            $submitData['content'] = $Category->getContent();
+        if (!isset($submitData['category_content_content'])) {
+            $submitData['category_content_content'] = $Category->getCategoryContentContent();
         }
         if (!isset($submitData['name'])) {
             $submitData['name'] = $Category->getName();

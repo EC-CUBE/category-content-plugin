@@ -16,7 +16,7 @@ $(function () {
         var id = $(this).data('id');
         var a = $('<a></a>').addClass('btn btn-ec-actionIcon mr-3 action-edit-content')
             .attr('data-toggle', 'modal')
-            .attr('data-target', '#modalCategoryContent_' + id)
+            .attr('data-target', '#category_content_modal_' + id)
             .attr('title', '{{ 'category_content.admin.category.content.edit'|trans }}')
             .append('<i class="fa fa-sticky-note-o fa-lg text-secondary"></i>');
         $(this).find('.col-auto.text-right').append(a);
@@ -25,7 +25,7 @@ $(function () {
 </script>
 
 {% for Category in Categories %}
-<div class="modal" id="modalCategoryContent_{{ Category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirm" aria-hidden="true">
+<div class="modal" id="category_content_modal_{{ Category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirm" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="POST" action="{{ (Parent and Parent.id) ? url('admin_product_category_show', {'parent_id': Parent.id}) : url('admin_product_category') }}" enctype="application/x-www-form-urlencoded">
@@ -51,8 +51,8 @@ $(function () {
                             <label>{{ 'category_content.admin.category.form.content'|trans }}</label>
                         </div>
                         <div class="col">
-                            {{ form_widget(forms[Category.id].content, { attr : {'class': 'form-control', 'rows': 10}}) }}
-                            {{ form_errors(forms[Category.id].content) }}
+                            {{ form_widget(forms[Category.id].category_content_content, { attr : {'class': 'form-control', 'rows': 10}}) }}
+                            {{ form_errors(forms[Category.id].category_content_content) }}
                         </div>
                     </div>
                 </div>

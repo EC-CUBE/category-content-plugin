@@ -23,26 +23,26 @@ trait CategoryTrait
     /**
      * @var string
      *
-     * @ORM\Column(name="plg_category_content", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="plg_category_content_content", type="string", length=1024, nullable=true)
      */
-    protected $content;
+    protected $category_content_content;
 
     /**
      * @return string
      */
-    public function getContent()
+    public function getCategoryContentContent()
     {
-        return $this->content;
+        return $this->category_content_content;
     }
 
     /**
-     * @param $content
+     * @param $categoryContentContent
      *
      * @return $this
      */
-    public function setContent($content)
+    public function setCategoryContentContent($categoryContentContent)
     {
-        $this->content = $content;
+        $this->category_content_content = $categoryContentContent;
 
         return $this;
     }

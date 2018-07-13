@@ -56,7 +56,7 @@ class CategoryTypeExtension extends AbstractTypeExtension
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('content', TextareaType::class, [
+        $builder->add('category_content_content', TextareaType::class, [
             'constraints' => [
                 new Assert\Length(['min' => 0, 'max' => $this->eccubeConfig['category_content.category_text_area_len']]),
             ],
