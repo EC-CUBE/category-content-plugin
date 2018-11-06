@@ -1,16 +1,71 @@
-{#
-  This file is part of the CategoryContent plugin
+{% block stylesheet %}
+    {# TODO:
+    - Fix to display popup confirmation block delete.
+    - Move to css file or unset z-index = 1 for css .list-group-item
+    - Need set only once
+    #}
+    <style type="text/css">
+        li.list-group-item {
+            z-index: inherit !important;
+        }
+    </style>
+{% endblock %}
+<script>
+$(function () {
+    $('.list-group-item.sortable-item').each(function () {
+        var id = $(this).data('id');
+        var a = $('<a></a>').addClass('btn btn-ec-actionIcon mr-3 action-edit-content')
+            .attr('data-toggle', 'modal')
+            .attr('data-target', '#category_content_modal_' + id)
+            .attr('title', '{{ 'category_content.admin.category.content.edit'|trans }}')
+            .append('<i class="fa fa-sticky-note-o fa-lg text-secondary"></i>');
+        $(this).find('.col-auto.text-right').append(a);
+    });
+});
+</script>
 
-  Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
-
-  For the full copyright and license information, please view the LICENSE
-  file that was distributed with this source code.
-#}
-
-<br />
-<div class="form-group col-sm-9 col-lg-10">
-    <div class="col-sm-9 col-lg-10" style="margin-top: 20px;padding-left: 0px;">
-        {{ form_widget(form.content, { attr : { 'rows' : 15, style : 'font-size:12px;width:100%' } }) }}
-        {{ form_errors(form.content) }}
+{% for Category in Categories %}
+<div class="modal" id="category_content_modal_{{ Category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirm" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST" action="{{ (Parent and Parent.id) ? url('admin_product_category_show', {'parent_id': Parent.id}) : url('admin_product_category') }}" enctype="application/x-www-form-urlencoded">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold">{{ 'category_content.admin.category.content'|trans }}</h5>
+                    <button class="close" type="button" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="{{ forms[Category.id]._token.vars.full_name }}" value="{{ forms[Category.id]._token.vars.value }}">
+                    <input type="hidden" name="{{ forms[Category.id].name.vars.full_name }}" value="{{ forms[Category.id].name.vars.value }}">
+                    <div class="row mb-3">
+                        <div class="col-2">
+                            <label>{{ 'category_content.admin.category.form.name'|trans }}</label>
+                        </div>
+                        <div class="col text-left">
+                            {{ Category.name }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2">
+                            <label>{{ 'category_content.admin.category.form.content'|trans }}</label>
+                        </div>
+                        <div class="col">
+                            {{ form_widget(forms[Category.id].category_content_content, { attr : {'class': 'form-control', 'rows': 10}}) }}
+                            {{ form_errors(forms[Category.id].category_content_content) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ec-sub" type="button" data-dismiss="modal">
+                        {{ 'admin.common.cancel'|trans }}
+                    </button>
+                    <button class="btn btn-ec-conversion" type="submit">
+                        {{ 'admin.common.save'|trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+{% endfor %}

@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.5/phpunit.xsd"
+         backupGlobals="false"
          colors="true"
-         bootstrap="./Tests/bootstrap.php"
+         bootstrap="Tests/bootstrap.php"
 >
+    <php>
+        <ini name="error_reporting" value="-1" />
+        <env name="KERNEL_CLASS" value="Eccube\Kernel" />
+        <env name="APP_ENV" value="test" />
+        <env name="APP_DEBUG" value="1" />
+        <env name="SHELL_VERBOSITY" value="-1" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
+        <!-- define your env variables for the test env here -->
+    </php>
 
     <!-- テストの場所 -->
     <testsuites>
@@ -24,13 +34,15 @@
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./</directory>
             <exclude>
-                <directory suffix=".php">./vendor</directory>
                 <directory suffix=".php">./Tests</directory>
                 <directory suffix=".php">./Resource</directory>
                 <file>./PluginManager.php</file>
-                <file>./Event/EventLegacy.php</file>
-                <file>./log.php</file>
             </exclude>
         </whitelist>
     </filter>
+
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+        <listener class="\DAMA\DoctrineTestBundle\PHPUnit\PHPUnitListener" />
+    </listeners>
 </phpunit>

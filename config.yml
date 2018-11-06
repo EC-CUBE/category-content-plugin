@@ -1,8 +1,0 @@
-name: CategoryContent
-code: CategoryContent
-version: 1.0.0
-service:
-    - CategoryContentServiceProvider
-orm.path:
-    - /Resource/doctrine
-event: Event
