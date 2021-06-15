@@ -1,6 +1,6 @@
 name: CategoryContent
 code: CategoryContent
-version: 1.0.0
+version: 1.0.1
 service:
     - CategoryContentServiceProvider
 orm.path:

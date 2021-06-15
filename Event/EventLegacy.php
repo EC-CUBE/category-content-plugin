@@ -97,13 +97,13 @@ class EventLegacy
 
             // 挿入するNodeを生成
             $template = $dom->createDocumentFragment();
-            $template->appendXML(htmlspecialchars($snipet));
+            $template->appendXML($snipet);
             $node = $dom->importNode($template, true);
 
             // 基準となるElementの直後にNodeを挿入し、Responsを書き換え
             $navElement->parentNode->insertBefore($node, $navElement->nextSibling);
-            $newHtml = html_entity_decode($dom->saveHTML(), ENT_NOQUOTES, 'UTF-8');
-            $response->setContent($newHtml);
+            $crawler = new Crawler($dom);
+            $response->setContent($crawler->html());
         }
         $event->setResponse($response);
         log_info('CategoryContent eccube.event.render.product_list.before end');
